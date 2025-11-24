@@ -527,3 +527,175 @@
     padding: 1.5rem;
   }
 }
+/* Additional styles for complete sections */
+
+/* AI Scanner Section */
+.ai-scanner-section {
+  background: var(--darker);
+  padding: 80px 0;
+}
+
+.scanner-container {
+  border-radius: 20px;
+  padding: 3rem;
+  text-align: center;
+}
+
+.file-upload-area {
+  border: 2px dashed rgba(0, 216, 167, 0.3);
+  border-radius: 15px;
+  padding: 3rem;
+  cursor: pointer;
+  transition: all 0.3s;
+  margin-bottom: 2rem;
+}
+
+.file-upload-area:hover {
+  border-color: var(--primary);
+  background: rgba(0, 216, 167, 0.05);
+}
+
+.scanner-content h3 {
+  font-size: 1.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.scan-result {
+  min-height: 100px;
+}
+
+/* Pricing Section */
+.pricing-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 3rem;
+  align-items: start;
+}
+
+.quote-calculator,
+.price-ranges {
+  padding: 2rem;
+  border-radius: 20px;
+}
+
+.quote-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.form-label {
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  color: var(--gray);
+}
+
+.form-input {
+  padding: 0.75rem 1rem;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: white;
+  font-size: 1rem;
+  transition: all 0.3s;
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 2px rgba(0, 216, 167, 0.2);
+}
+
+.quote-result {
+  padding: 1rem;
+  background: rgba(34, 197, 94, 0.1);
+  border: 1px solid rgba(34, 197, 94, 0.3);
+  border-radius: 12px;
+}
+
+.estimate-cost {
+  font-size: 1.25rem;
+  font-weight: bold;
+  color: var(--success);
+  margin-bottom: 0.5rem;
+}
+
+.estimate-time {
+  color: var(--gray);
+  margin-bottom: 0.25rem;
+}
+
+.estimate-note {
+  font-size: 0.875rem;
+  color: var(--gray);
+}
+
+.price-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.price-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.price-item:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.price-info h4 {
+  font-size: 1.125rem;
+  margin-bottom: 0.25rem;
+}
+
+.price-info p {
+  color: var(--gray);
+  font-size: 0.875rem;
+}
+
+.price-amount {
+  font-size: 1.25rem;
+  font-weight: bold;
+  color: var(--primary);
+}
+
+/* Order Tracker Additional Styles */
+.live-indicator {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: rgba(34, 197, 94, 0.1);
+  border: 1px solid rgba(34, 197, 94, 0.3);
+  padding: 0.25rem 0.75rem;
+  border-radius: 50px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--success);
+  margin-left: 0.5rem;
+}
+
+/* Add responsive styles */
+@media (max-width: 768px) {
+  .pricing-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .hero-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .file-upload-area {
+    padding: 2rem 1rem;
+  }
+}
