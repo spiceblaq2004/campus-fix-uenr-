@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Login - CampusFix</title>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .admin-login {
+            min-height: 100vh;
+            background: var(--gradient-dark);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .login-card {
+            background: var(--gray-800);
+            padding: 40px;
+            border-radius: 20px;
+            border: 1px solid rgba(99, 102, 241, 0.3);
+            box-shadow: var(--shadow-xl);
+            width: 100%;
+            max-width: 400px;
+        }
+        .login-logo {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+    </style>
+</head>
+<body>
+    <div class="admin-login">
+        <div class="login-card">
+            <div class="login-logo">
+                <div class="logo-icon" style="margin: 0 auto 15px;">
+                    <i class="fas fa-tools"></i>
+                </div>
+                <h2>CampusFix Admin</h2>
+                <p style="color: var(--gray-400); margin-top: 10px;">Technician Portal</p>
+            </div>
+            
+            <form id="adminLoginForm">
+                <div class="form-group">
+                    <label>Username</label>
+                    <input type="text" id="username" placeholder="Enter username" required>
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" id="password" placeholder="Enter password" required>
+                </div>
+                <button type="submit" class="btn btn-primary btn-full">
+                    <i class="fas fa-sign-in-alt"></i> Login
+                </button>
+            </form>
+            
+            <div style="text-align: center; margin-top: 20px;">
+                <a href="index.html" style="color: var(--primary); text-decoration: none;">
+                    <i class="fas fa-arrow-left"></i> Back to Main Site
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('adminLoginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            
+            // Simple authentication (in real app, use proper auth)
+            if (username === 'spice' && password === 'campusfix2024') {
+                localStorage.setItem('adminAuthenticated', 'true');
+                window.location.href = 'admin-dashboard.html';
+            } else {
+                alert('Invalid credentials! Use: spice / campusfix2024');
+            }
+        });
+    </script>
+</body>
+</html>
