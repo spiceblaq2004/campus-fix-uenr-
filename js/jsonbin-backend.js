@@ -210,7 +210,7 @@ class JsonBinBackend {
             const technicianAssignment = data.order_technicians.find(ot => ot.order_id === order.id);
             const technician = technicianAssignment ? data.technicians.find(t => t.id === technicianAssignment.technician_id) : null;
 
-            // Format steps object
+            // Format steps object for frontend
             const stepsObj = {};
             steps.forEach(step => {
                 const stepKey = step.step_name.toLowerCase().replace(/ /g, '_');
@@ -219,7 +219,13 @@ class JsonBinBackend {
 
             return {
                 ...order,
-                updates,
+                updates: updates.map(update => ({
+                    icon: update.icon,
+                    color: update.color,
+                    bgColor: update.bg_color,
+                    message: update.message,
+                    time: new Date(update.created_at).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })
+                })),
                 steps: stepsObj,
                 technician,
                 progress: order.progress || 10
@@ -230,7 +236,115 @@ class JsonBinBackend {
         }
     }
 
-    // WhatsApp messaging (same as before)
+    // Admin: Update order status
+    async updateOrderStatus(orderCode, updates) {
+        try {
+            const data = await this.getData();
+            const orderIndex = data.orders.findIndex(o => o.order_code === orderCode);
+            
+            if (orderIndex !== -1) {
+                // Update the order
+                data.orders[orderIndex] = {
+                    ...data.orders[orderIndex],
+                    ...updates,
+                    updated_at: new Date().toISOString()
+                };
+                
+                await this.updateData(data);
+                return data.orders[orderIndex];
+            }
+            return null;
+        } catch (error) {
+            console.error('Error updating order status:', error);
+            throw error;
+        }
+    }
+
+    // Admin: Add order update
+    async addOrderUpdate(orderCode, updateData) {
+        try {
+            const data = await this.getData();
+            const order = data.orders.find(o => o.order_code === orderCode);
+            
+            if (order) {
+                data.order_updates.push({
+                    id: this.generateId(),
+                    order_id: order.id,
+                    message: updateData.message,
+                    icon: updateData.icon,
+                    color: updateData.color,
+                    bg_color: updateData.bg_color,
+                    created_at: new Date().toISOString()
+                });
+
+                await this.updateData(data);
+                return true;
+            }
+            return false;
+        } catch (error) {
+            console.error('Error adding order update:', error);
+            throw error;
+        }
+    }
+
+    // Admin: Update order steps
+    async updateOrderSteps(orderCode, stepsData) {
+        try {
+            const data = await this.getData();
+            const order = data.orders.find(o => o.order_code === orderCode);
+            
+            if (order) {
+                // Remove existing steps for this order
+                data.order_steps = data.order_steps.filter(step => step.order_id !== order.id);
+                
+                // Add new steps
+                stepsData.forEach(step => {
+                    data.order_steps.push({
+                        id: this.generateId(),
+                        order_id: order.id,
+                        ...step
+                    });
+                });
+
+                await this.updateData(data);
+                return true;
+            }
+            return false;
+        } catch (error) {
+            console.error('Error updating order steps:', error);
+            throw error;
+        }
+    }
+
+    // Admin: Get all orders with filters
+    async getOrders(filter = {}) {
+        try {
+            const data = await this.getData();
+            let orders = data.orders || [];
+
+            // Apply filters
+            if (filter.status) {
+                orders = orders.filter(order => order.status === filter.status);
+            }
+
+            if (filter.search) {
+                const searchTerm = filter.search.toLowerCase();
+                orders = orders.filter(order => 
+                    order.order_code.toLowerCase().includes(searchTerm) ||
+                    order.customer_name.toLowerCase().includes(searchTerm) ||
+                    order.device_brand.toLowerCase().includes(searchTerm) ||
+                    order.repair_type.toLowerCase().includes(searchTerm)
+                );
+            }
+
+            return orders.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+        } catch (error) {
+            console.error('Error getting orders:', error);
+            return [];
+        }
+    }
+
+    // WhatsApp messaging
     generateWhatsAppUrl(phone, message) {
         const formattedPhone = phone.replace(/\D/g, '');
         const encodedMessage = encodeURIComponent(message);
@@ -348,8 +462,49 @@ ${order.issue_description}
 
         return completionTime.toISOString();
     }
+
+    // Utility method to get dashboard statistics
+    async getDashboardStats() {
+        try {
+            const data = await this.getData();
+            const orders = data.orders || [];
+            
+            const pending = orders.filter(o => o.status === 'Order Received').length;
+            const inProgress = orders.filter(o => 
+                o.status.includes('Progress') || 
+                o.status === 'Diagnosis Complete' ||
+                o.status === 'Repair Complete'
+            ).length;
+            const completed = orders.filter(o => o.status === 'Ready for Pickup').length;
+
+            // Calculate today's revenue (simplified)
+            const today = new Date().toDateString();
+            const todayOrders = orders.filter(o => 
+                new Date(o.updated_at).toDateString() === today && 
+                o.status === 'Ready for Pickup'
+            );
+            const revenue = todayOrders.length * 150; // Average GH₵150 per repair
+
+            return {
+                pending,
+                inProgress,
+                completed,
+                revenue,
+                totalOrders: orders.length
+            };
+        } catch (error) {
+            console.error('Error getting dashboard stats:', error);
+            return {
+                pending: 0,
+                inProgress: 0,
+                completed: 0,
+                revenue: 0,
+                totalOrders: 0
+            };
+        }
+    }
 }
 
 // Initialize the backend
 window.jsonbinBackend = new JsonBinBackend();
-console.log('✅ JSONBin Backend initialized!');
+console.log('✅ JSONBin Backend initialized with admin features!');
