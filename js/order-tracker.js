@@ -1,4 +1,6 @@
-// ===== LIVE ORDER TRACKER SYSTEM =====
+// ================================
+// LIVE ORDER TRACKER SYSTEM
+// ================================
 
 // Enhanced sample orders with real-time progression
 const sampleOrders = {
@@ -175,14 +177,8 @@ class LiveOrderTracker {
         this.isAutoRefreshEnabled = true;
         this.updateCallbacks = [];
         
-        this.init();
-    }
-
-    init() {
         this.initializeEventListeners();
         this.startAutoRefresh();
-        this.loadDemoOrders();
-        console.log('Live Order Tracker initialized 📊');
     }
 
     initializeEventListeners() {
@@ -190,69 +186,58 @@ class LiveOrderTracker {
         const autoRefreshToggle = document.getElementById('autoRefreshToggle');
         const toggleSlider = document.getElementById('toggleSlider');
         
-        if (autoRefreshToggle) {
-            autoRefreshToggle.addEventListener('change', (e) => {
-                this.isAutoRefreshEnabled = e.target.checked;
-                if (toggleSlider) {
-                    toggleSlider.style.transform = e.target.checked ? 'translateX(24px)' : 'translateX(0)';
-                }
-                
-                if (this.isAutoRefreshEnabled) {
-                    this.startAutoRefresh();
-                } else {
-                    this.stopAutoRefresh();
-                }
-            });
-        }
+        autoRefreshToggle.addEventListener('change', (e) => {
+            this.isAutoRefreshEnabled = e.target.checked;
+            toggleSlider.style.transform = e.target.checked ? 'translateX(24px)' : 'translateX(0)';
+            
+            if (this.isAutoRefreshEnabled) {
+                this.startAutoRefresh();
+            } else {
+                this.stopAutoRefresh();
+            }
+        });
 
         // Manual refresh
-        const manualRefresh = document.getElementById('manualRefresh');
-        if (manualRefresh) {
-            manualRefresh.addEventListener('click', () => {
-                this.manualRefresh();
-            });
-        }
+        document.getElementById('manualRefresh').addEventListener('click', () => {
+            this.manualRefresh();
+        });
 
         // Track order button
-        const trackOrderBtn = document.getElementById('trackOrderBtn');
-        if (trackOrderBtn) {
-            trackOrderBtn.addEventListener('click', () => {
-                this.trackOrder();
-            });
-        }
+        document.getElementById('trackOrderBtn').addEventListener('click', () => {
+            this.trackOrder();
+        });
 
         // Enter key in search input
-        const orderIdInput = document.getElementById('orderIdInput');
-        if (orderIdInput) {
-            orderIdInput.addEventListener('keypress', (e) => {
-                if (e.key === 'Enter') {
-                    this.trackOrder();
-                }
+        document.getElementById('orderIdInput').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                this.trackOrder();
+            }
+        });
+
+        // Demo order buttons
+        document.querySelectorAll('.demo-order-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const orderId = btn.getAttribute('data-order');
+                document.getElementById('orderIdInput').value = orderId;
+                this.trackOrder();
             });
-        }
+        });
 
         // Try again button
-        const tryAgainBtn = document.getElementById('tryAgainBtn');
-        if (tryAgainBtn) {
-            tryAgainBtn.addEventListener('click', () => {
-                this.showSearchInterface();
-            });
-        }
-    }
-
-    loadDemoOrders() {
-        // Load saved orders from localStorage and merge with sample orders
-        const savedOrders = JSON.parse(localStorage.getItem('campusFixOrders') || '{}');
-        window.allOrders = { ...sampleOrders, ...savedOrders };
+        document.getElementById('tryAgainBtn').addEventListener('click', () => {
+            document.getElementById('noOrderMessage').classList.add('hidden');
+            document.getElementById('orderIdInput').focus();
+        });
     }
 
     trackOrder() {
-        const orderIdInput = document.getElementById('orderIdInput');
-        if (!orderIdInput) return;
-
-        const orderId = orderIdInput.value.trim().toUpperCase();
+        const orderId = document.getElementById('orderIdInput').value.trim();
         
-        if (orderId && window.allOrders && window.allOrders[orderId]) {
+        // Load saved orders from localStorage
+        const savedOrders = JSON.parse(localStorage.getItem('campusFixOrders') || '{}');
+        const allOrders = { ...sampleOrders, ...savedOrders };
+        
+        if (orderId && allOrders[orderId]) {
             this.currentOrderId = orderId;
             this.updateOrderDisplay(orderId);
             this.simulateRealTimeProgress(orderId);
@@ -262,32 +247,48 @@ class LiveOrderTracker {
     }
 
     updateOrderDisplay(orderId) {
-        if (!window.allOrders || !window.allOrders[orderId]) return;
-
-        const order = window.allOrders[orderId];
+        // Load saved orders from localStorage
+        const savedOrders = JSON.parse(localStorage.getItem('campusFixOrders') || '{}');
+        const allOrders = { ...sampleOrders, ...savedOrders };
+        
+        const order = allOrders[orderId];
+        if (!order) return;
 
         // Update all display elements
-        this.updateTextContent('displayOrderId', orderId);
-        this.updateTextContent('displayDevice', order.device);
-        this.updateTextContent('displayRepair', order.repair);
-        this.updateTextContent('displayStatus', order.status);
-        this.updateTextContent('displayCompletion', order.completion);
+        document.getElementById('displayOrderId').textContent = orderId;
+        document.getElementById('displayDevice').textContent = order.device;
+        document.getElementById('displayRepair').textContent = order.repair;
+        document.getElementById('displayStatus').textContent = order.status;
+        document.getElementById('displayCompletion').textContent = order.completion;
         
         // Update status badge
-        this.updateStatusBadge(order.status);
+        const statusBadge = document.getElementById('displayStatus');
+        statusBadge.className = 'status-badge ';
+        if (order.status === 'In Progress') {
+            statusBadge.classList.add('status-in-progress');
+        } else if (order.status === 'Completed') {
+            statusBadge.classList.add('status-completed');
+        } else if (order.status === 'Ready for Pickup') {
+            statusBadge.classList.add('status-ready');
+        } else {
+            statusBadge.classList.add('status-pending');
+        }
         
         // Update progress bar
-        this.updateProgressBar(order.progress);
+        document.getElementById('progressBar').style.width = `${order.progress}%`;
         
         // Update step times and status
         this.updateProgressSteps(order);
         
         // Update estimated time
-        this.updateTextContent('estTime', order.estTime);
-        this.updateTextContent('readyTime', order.readyTime);
+        document.getElementById('estTime').textContent = order.estTime;
+        document.getElementById('readyTime').textContent = order.readyTime;
         
         // Update technician info
-        this.updateTechnicianInfo(order.technician);
+        if (order.technician) {
+            document.querySelector('.technician-name').textContent = order.technician.name;
+            document.querySelector('.technician-role').textContent = order.technician.role;
+        }
         
         // Update repair updates
         this.updateRepairUpdates(order);
@@ -296,38 +297,8 @@ class LiveOrderTracker {
         this.updateLastUpdatedTime();
         
         // Show tracking section
-        this.showTrackingInterface();
-    }
-
-    updateTextContent(elementId, text) {
-        const element = document.getElementById(elementId);
-        if (element) {
-            element.textContent = text;
-        }
-    }
-
-    updateStatusBadge(status) {
-        const statusBadge = document.getElementById('displayStatus');
-        if (!statusBadge) return;
-
-        statusBadge.className = 'status-badge ';
-        
-        if (status === 'In Progress') {
-            statusBadge.classList.add('status-in-progress');
-        } else if (status === 'Completed') {
-            statusBadge.classList.add('status-completed');
-        } else if (status === 'Ready for Pickup') {
-            statusBadge.classList.add('status-ready');
-        } else {
-            statusBadge.classList.add('status-pending');
-        }
-    }
-
-    updateProgressBar(progress) {
-        const progressBar = document.getElementById('progressBar');
-        if (progressBar) {
-            progressBar.style.width = `${progress}%`;
-        }
+        document.getElementById('orderTracking').classList.remove('hidden');
+        document.getElementById('noOrderMessage').classList.add('hidden');
     }
 
     updateProgressSteps(order) {
@@ -343,32 +314,20 @@ class LiveOrderTracker {
         });
 
         // Update step times
-        this.updateTextContent('step1Time', order.steps.received);
-        this.updateTextContent('step2Time', order.steps.diagnosis);
-        this.updateTextContent('step3Time', order.steps.repair);
-        this.updateTextContent('step4Time', order.steps.quality);
-        this.updateTextContent('step5Time', order.steps.ready);
-    }
-
-    updateTechnicianInfo(technician) {
-        if (!technician) return;
-
-        const technicianName = document.querySelector('.technician-name');
-        const technicianRole = document.querySelector('.technician-role');
-        
-        if (technicianName) technicianName.textContent = technician.name;
-        if (technicianRole) technicianRole.textContent = technician.role;
+        document.getElementById('step1Time').textContent = order.steps.received;
+        document.getElementById('step2Time').textContent = order.steps.diagnosis;
+        document.getElementById('step3Time').textContent = order.steps.repair;
+        document.getElementById('step4Time').textContent = order.steps.quality;
+        document.getElementById('step5Time').textContent = order.steps.ready;
     }
 
     updateRepairUpdates(order) {
         const updatesContainer = document.getElementById('updatesContainer');
-        if (!updatesContainer) return;
-
         updatesContainer.innerHTML = '';
         
         order.updates.forEach(update => {
             const updateElement = document.createElement('div');
-            updateElement.className = 'update-item fade-in-up';
+            updateElement.className = 'update-item';
             updateElement.innerHTML = `
                 <div class="update-icon ${update.bgColor} ${update.color}">
                     <i class="${update.icon}"></i>
@@ -389,22 +348,19 @@ class LiveOrderTracker {
             minute: '2-digit',
             second: '2-digit'
         });
-        this.updateTextContent('updateTime', timeString);
+        document.getElementById('updateTime').textContent = timeString;
     }
 
     simulateRealTimeProgress(orderId) {
-        if (!window.allOrders || !window.allOrders[orderId]) return;
-
-        const order = window.allOrders[orderId];
-        if (order.status === 'Completed' || order.status === 'Ready for Pickup') return;
-
-        // Clear any existing interval
-        if (order.progressInterval) {
-            clearInterval(order.progressInterval);
-        }
+        // Load saved orders from localStorage
+        const savedOrders = JSON.parse(localStorage.getItem('campusFixOrders') || '{}');
+        const allOrders = { ...sampleOrders, ...savedOrders };
+        
+        const order = allOrders[orderId];
+        if (!order || order.status === 'Completed' || order.status === 'Ready for Pickup') return;
 
         // Simulate progress every 30 seconds for demo purposes
-        order.progressInterval = setInterval(() => {
+        setInterval(() => {
             if (order.progress < 100) {
                 // Increment progress
                 order.progress += Math.floor(Math.random() * 5) + 1;
@@ -418,14 +374,6 @@ class LiveOrderTracker {
                         hour: '2-digit', 
                         minute: '2-digit'
                     });
-                    
-                    // Add quality check update
-                    this.addUpdate(order, {
-                        icon: 'fas fa-check-circle',
-                        color: 'text-green-400',
-                        bgColor: 'bg-green-400/10',
-                        message: 'Quality check in progress - testing all functions'
-                    });
                 } else if (order.progress === 100) {
                     order.status = 'Ready for Pickup';
                     order.steps.quality = new Date().toLocaleTimeString('en-US', { 
@@ -434,21 +382,10 @@ class LiveOrderTracker {
                     });
                     order.steps.ready = 'Ready Now';
                     order.completion = 'Ready for Pickup';
-                    
-                    // Add completion update
-                    this.addUpdate(order, {
-                        icon: 'fas fa-box',
-                        color: 'text-purple-400',
-                        bgColor: 'bg-purple-400/10',
-                        message: 'Repair completed - ready for pickup at your hostel'
-                    });
-                    
-                    // Stop the interval
-                    clearInterval(order.progressInterval);
                 }
 
                 // Add new update if significant progress made
-                if (Math.random() > 0.7 && order.progress < 100) {
+                if (Math.random() > 0.7) {
                     this.addRandomUpdate(order);
                 }
 
@@ -461,16 +398,42 @@ class LiveOrderTracker {
         }, 30000); // Update every 30 seconds
     }
 
-    addUpdate(order, update) {
-        const newUpdate = {
-            ...update,
-            time: new Date().toLocaleTimeString('en-US', { 
-                hour: '2-digit', 
-                minute: '2-digit'
-            })
-        };
-        
-        order.updates.push(newUpdate);
+    addRandomUpdate(order) {
+        const updates = [
+            {
+                icon: 'fas fa-tools',
+                color: 'text-amber-400',
+                bgColor: 'bg-amber-400/10',
+                message: 'Technician is calibrating the new display',
+                time: new Date().toLocaleTimeString('en-US', { 
+                    hour: '2-digit', 
+                    minute: '2-digit'
+                })
+            },
+            {
+                icon: 'fas fa-battery-full',
+                color: 'text-green-400',
+                bgColor: 'bg-green-400/10',
+                message: 'Battery and functionality tests completed successfully',
+                time: new Date().toLocaleTimeString('en-US', { 
+                    hour: '2-digit', 
+                    minute: '2-digit'
+                })
+            },
+            {
+                icon: 'fas fa-camera',
+                color: 'text-purple-400',
+                bgColor: 'bg-purple-400/10',
+                message: 'Camera and sensor calibration in progress',
+                time: new Date().toLocaleTimeString('en-US', { 
+                    hour: '2-digit', 
+                    minute: '2-digit'
+                })
+            }
+        ];
+
+        const randomUpdate = updates[Math.floor(Math.random() * updates.length)];
+        order.updates.push(randomUpdate);
 
         // Keep only last 6 updates
         if (order.updates.length > 6) {
@@ -478,51 +441,10 @@ class LiveOrderTracker {
         }
     }
 
-    addRandomUpdate(order) {
-        const updates = [
-            {
-                icon: 'fas fa-tools',
-                color: 'text-amber-400',
-                bgColor: 'bg-amber-400/10',
-                message: 'Technician is calibrating the new display'
-            },
-            {
-                icon: 'fas fa-battery-full',
-                color: 'text-green-400',
-                bgColor: 'bg-green-400/10',
-                message: 'Battery and functionality tests completed successfully'
-            },
-            {
-                icon: 'fas fa-camera',
-                color: 'text-purple-400',
-                bgColor: 'bg-purple-400/10',
-                message: 'Camera and sensor calibration in progress'
-            },
-            {
-                icon: 'fas fa-bolt',
-                color: 'text-yellow-400',
-                bgColor: 'bg-yellow-400/10',
-                message: 'Fast charging functionality verified'
-            },
-            {
-                icon: 'fas fa-microchip',
-                color: 'text-blue-400',
-                bgColor: 'bg-blue-400/10',
-                message: 'Running final software diagnostics'
-            }
-        ];
-
-        const randomUpdate = updates[Math.floor(Math.random() * updates.length)];
-        this.addUpdate(order, randomUpdate);
-    }
-
     saveOrder(order) {
         const savedOrders = JSON.parse(localStorage.getItem('campusFixOrders') || '{}');
         savedOrders[order.code] = order;
         localStorage.setItem('campusFixOrders', JSON.stringify(savedOrders));
-        
-        // Update global orders reference
-        window.allOrders = { ...sampleOrders, ...savedOrders };
     }
 
     startAutoRefresh() {
@@ -546,62 +468,27 @@ class LiveOrderTracker {
 
     manualRefresh() {
         const refreshBtn = document.getElementById('manualRefresh');
-        if (refreshBtn) {
-            refreshBtn.disabled = true;
-            refreshBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Refreshing...';
+        refreshBtn.disabled = true;
+        refreshBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Refreshing...';
 
-            if (this.currentOrderId) {
-                this.updateOrderDisplay(this.currentOrderId);
-            }
-
-            setTimeout(() => {
-                refreshBtn.disabled = false;
-                refreshBtn.innerHTML = '<i class="fas fa-sync-alt"></i> Refresh Now';
-            }, 1000);
+        if (this.currentOrderId) {
+            this.updateOrderDisplay(this.currentOrderId);
         }
-    }
 
-    showTrackingInterface() {
-        const orderTracking = document.getElementById('orderTracking');
-        const noOrderMessage = document.getElementById('noOrderMessage');
-        
-        if (orderTracking) orderTracking.classList.remove('hidden');
-        if (noOrderMessage) noOrderMessage.classList.add('hidden');
+        setTimeout(() => {
+            refreshBtn.disabled = false;
+            refreshBtn.innerHTML = '<i class="fas fa-sync-alt"></i> Refresh Now';
+        }, 1000);
     }
 
     showOrderNotFound() {
-        const orderTracking = document.getElementById('orderTracking');
-        const noOrderMessage = document.getElementById('noOrderMessage');
-        
-        if (orderTracking) orderTracking.classList.add('hidden');
-        if (noOrderMessage) noOrderMessage.classList.remove('hidden');
-    }
-
-    showSearchInterface() {
-        const noOrderMessage = document.getElementById('noOrderMessage');
-        const orderIdInput = document.getElementById('orderIdInput');
-        
-        if (noOrderMessage) noOrderMessage.classList.add('hidden');
-        if (orderIdInput) {
-            orderIdInput.value = '';
-            orderIdInput.focus();
-        }
+        document.getElementById('orderTracking').classList.add('hidden');
+        document.getElementById('noOrderMessage').classList.remove('hidden');
     }
 }
 
 // Initialize when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
     window.liveTracker = new LiveOrderTracker();
-
-    // Demo order buttons
-    document.querySelectorAll('.demo-order-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
-            const orderId = btn.getAttribute('data-order');
-            const orderIdInput = document.getElementById('orderIdInput');
-            if (orderIdInput) {
-                orderIdInput.value = orderId;
-            }
-            window.liveTracker.trackOrder();
-        });
-    });
+    window.sampleOrders = sampleOrders;
 });
