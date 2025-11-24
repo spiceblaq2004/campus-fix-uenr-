@@ -970,3 +970,245 @@
     flex-direction: row;
   }
 }
+/* New Components for Simplified Version */
+
+/* Service Features List */
+.service-features {
+  list-style: none;
+  margin-top: 1rem;
+  text-align: left;
+}
+
+.service-features li {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+  font-size: 0.875rem;
+  color: var(--gray-light);
+}
+
+.service-features li i {
+  color: var(--primary);
+  font-size: 0.75rem;
+}
+
+/* Why Choose Us Section */
+.why-choose-us {
+  padding: 5rem 0;
+  background: var(--darker);
+}
+
+.features-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2rem;
+}
+
+.feature-item {
+  border-radius: var(--border-radius-lg);
+  padding: 2rem;
+  text-align: center;
+  transition: var(--transition);
+}
+
+.feature-item:hover {
+  transform: translateY(-5px);
+}
+
+.feature-icon {
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+  background: rgba(0, 216, 167, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 1.5rem;
+  color: var(--primary);
+  font-size: 1.5rem;
+}
+
+.feature-item h3 {
+  font-size: 1.25rem;
+  margin-bottom: 1rem;
+}
+
+.feature-item p {
+  color: var(--gray);
+  line-height: 1.6;
+}
+
+/* Repair Process Section */
+.repair-process {
+  padding: 5rem 0;
+}
+
+.process-steps {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2rem;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.process-step {
+  display: flex;
+  align-items: flex-start;
+  gap: 1.5rem;
+  padding: 1.5rem;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: var(--border-radius-lg);
+  border-left: 4px solid var(--primary);
+}
+
+.step-number {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 1.125rem;
+  flex-shrink: 0;
+}
+
+.step-content h3 {
+  font-size: 1.25rem;
+  margin-bottom: 0.5rem;
+}
+
+.step-content p {
+  color: var(--gray);
+  line-height: 1.6;
+}
+
+/* FAQ Section */
+.faq {
+  padding: 5rem 0;
+  background: var(--darker);
+}
+
+.faq-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.faq-item {
+  border-radius: var(--border-radius-lg);
+  padding: 1.5rem;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.faq-question {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+}
+
+.faq-question h3 {
+  font-size: 1.125rem;
+  margin: 0;
+}
+
+.faq-question i {
+  color: var(--primary);
+  transition: transform 0.3s ease;
+}
+
+.faq-answer {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease;
+}
+
+.faq-answer p {
+  color: var(--gray);
+  line-height: 1.6;
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.faq-item.active .faq-question i {
+  transform: rotate(180deg);
+}
+
+.faq-item.active .faq-answer {
+  max-height: 200px;
+}
+
+/* Contact Info in CTA */
+.contact-info {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2rem;
+  margin-top: 3rem;
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.contact-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  padding: 1.5rem;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: var(--border-radius);
+}
+
+.contact-item i {
+  font-size: 1.5rem;
+  color: var(--primary);
+  margin-top: 0.25rem;
+}
+
+.contact-item h4 {
+  margin-bottom: 0.5rem;
+}
+
+.contact-item p {
+  color: var(--gray);
+  margin: 0;
+}
+
+/* Responsive Design for New Components */
+@media (min-width: 768px) {
+  .services-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .features-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .contact-info {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .services-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  
+  .features-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  
+  .process-steps {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .faq-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
