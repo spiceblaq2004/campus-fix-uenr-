@@ -1,170 +1,233 @@
 // ================================
-// ORDER CODE GENERATION SYSTEM (ENHANCED)
+// ENHANCED ORDER GENERATOR
 // ================================
 
-class OrderCodeGenerator {
+class OrderGenerator {
     constructor() {
         this.orderCounter = this.loadOrderCounter();
-        this.generatedOrders = this.loadSavedOrders();
         this.initializeEventListeners();
-        this.initializeRealTimeValidation();
+        this.setupFormValidation();
     }
 
     initializeEventListeners() {
-        // Form submission
-        document.getElementById('orderForm').addEventListener('submit', (e) => {
-            e.preventDefault();
-            this.generateOrderCode();
-        });
+        const orderForm = document.getElementById('orderForm');
+        if (orderForm) {
+            orderForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                this.handleOrderSubmission();
+            });
+        }
 
-        // Track this order button
-        document.getElementById('trackThisOrder').addEventListener('click', () => {
-            this.trackGeneratedOrder();
-        });
-
-        // Print order details
-        document.getElementById('printOrderCode').addEventListener('click', () => {
-            this.printOrderDetails();
-        });
-
-        // New order button
-        document.getElementById('newOrder').addEventListener('click', () => {
-            this.resetForm();
-        });
-
-        // Share buttons
-        document.getElementById('shareWhatsApp').addEventListener('click', this.shareViaWhatsApp);
-        document.getElementById('copyCode').addEventListener('click', this.copyOrderCode);
-        document.getElementById('saveImage').addEventListener('click', this.saveAsImage);
+        // Real-time form validation
+        this.setupRealTimeValidation();
+        
+        // Preview updates
+        this.setupPreviewUpdates();
     }
 
-    initializeRealTimeValidation() {
+    setupFormValidation() {
+        // Add custom validation styles
+        this.injectValidationStyles();
+    }
+
+    injectValidationStyles() {
+        const style = document.createElement('style');
+        style.textContent = `
+            .form-group.error input,
+            .form-group.error select,
+            .form-group.error textarea {
+                border-color: #ef4444 !important;
+                box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1) !important;
+            }
+            
+            .form-group.success input,
+            .form-group.success select,
+            .form-group.success textarea {
+                border-color: #10b981 !important;
+                box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1) !important;
+            }
+            
+            .validation-message {
+                font-size: 0.875rem;
+                margin-top: 0.5rem;
+                display: flex;
+                align-items: center;
+                gap: 0.5rem;
+            }
+            
+            .validation-error {
+                color: #ef4444;
+            }
+            
+            .validation-success {
+                color: #10b981;
+            }
+        `;
+        document.head.appendChild(style);
+    }
+
+    setupRealTimeValidation() {
         const inputs = document.querySelectorAll('#orderForm input, #orderForm select, #orderForm textarea');
         
         inputs.forEach(input => {
-            input.addEventListener('blur', () => this.validateField(input));
-            input.addEventListener('input', () => this.clearFieldError(input));
+            input.addEventListener('blur', () => {
+                this.validateField(input);
+            });
+            
+            input.addEventListener('input', () => {
+                this.clearFieldError(input);
+            });
         });
     }
 
     validateField(field) {
         const value = field.value.trim();
-        const fieldName = field.getAttribute('name') || field.id;
-        
         let isValid = true;
-        let errorMessage = '';
-        
-        switch (fieldName) {
+        let message = '';
+
+        switch (field.id) {
             case 'customerName':
                 if (!value) {
-                    errorMessage = 'Name is required';
                     isValid = false;
+                    message = 'Name is required';
                 } else if (value.length < 2) {
-                    errorMessage = 'Name must be at least 2 characters';
                     isValid = false;
+                    message = 'Name must be at least 2 characters';
                 }
                 break;
                 
             case 'customerPhone':
                 if (!value) {
-                    errorMessage = 'Phone number is required';
                     isValid = false;
+                    message = 'Phone number is required';
                 } else if (!/^(\+233|0)[235]\d{8}$/.test(value.replace(/\s/g, ''))) {
-                    errorMessage = 'Please enter a valid Ghanaian phone number';
                     isValid = false;
+                    message = 'Please enter a valid Ghanaian phone number';
                 }
                 break;
                 
             case 'deviceModel':
                 if (!value) {
-                    errorMessage = 'Device model is required';
                     isValid = false;
+                    message = 'Device model is required';
                 }
                 break;
                 
             case 'issueDescription':
                 if (!value) {
-                    errorMessage = 'Please describe the issue';
                     isValid = false;
+                    message = 'Please describe the issue';
                 } else if (value.length < 10) {
-                    errorMessage = 'Please provide more details (at least 10 characters)';
                     isValid = false;
+                    message = 'Please provide more details (at least 10 characters)';
                 }
                 break;
         }
-        
+
         if (!isValid) {
-            this.showFieldError(field, errorMessage);
+            this.showFieldError(field, message);
         } else {
-            this.clearFieldError(field);
+            this.showFieldSuccess(field);
         }
-        
+
         return isValid;
     }
 
     showFieldError(field, message) {
-        this.clearFieldError(field);
-        field.classList.add('error-shake', 'border-red-400');
+        this.clearFieldStatus(field);
+        field.parentNode.classList.add('error');
         
         const errorDiv = document.createElement('div');
-        errorDiv.className = 'error-message text-red-400 text-sm mt-1';
-        errorDiv.textContent = message;
-        
+        errorDiv.className = 'validation-message validation-error';
+        errorDiv.innerHTML = `<i class="fas fa-exclamation-circle"></i> ${message}`;
         field.parentNode.appendChild(errorDiv);
+        
+        field.classList.add('error-shake');
+        setTimeout(() => {
+            field.classList.remove('error-shake');
+        }, 500);
+    }
+
+    showFieldSuccess(field) {
+        this.clearFieldStatus(field);
+        field.parentNode.classList.add('success');
     }
 
     clearFieldError(field) {
-        field.classList.remove('error-shake', 'border-red-400');
-        const errorMessage = field.parentNode.querySelector('.error-message');
-        if (errorMessage) {
-            errorMessage.remove();
+        this.clearFieldStatus(field);
+    }
+
+    clearFieldStatus(field) {
+        field.parentNode.classList.remove('error', 'success');
+        const message = field.parentNode.querySelector('.validation-message');
+        if (message) {
+            message.remove();
         }
     }
 
-    async generateOrderCode() {
-        // Show loading state
-        this.showLoading();
+    setupPreviewUpdates() {
+        const form = document.getElementById('orderForm');
+        if (!form) return;
+
+        const updatePreview = this.debounce(() => {
+            const deviceBrand = document.getElementById('deviceBrand').value;
+            const repairType = document.getElementById('repairTypeGen').value;
+            
+            if (deviceBrand && repairType) {
+                // Update preview with estimated time based on repair type
+                let estimatedTime = '2-4 hours';
+                if (repairType === 'Screen Replacement') {
+                    estimatedTime = '3-5 hours';
+                } else if (repairType === 'Battery Replacement') {
+                    estimatedTime = '1-2 hours';
+                } else if (repairType === 'Charging Port') {
+                    estimatedTime = '2-3 hours';
+                }
+                
+                // You could update preview elements here
+                console.log('Preview updated:', { deviceBrand, repairType, estimatedTime });
+            }
+        }, 300);
+
+        // Listen to form changes
+        form.addEventListener('input', updatePreview);
+        form.addEventListener('change', updatePreview);
+    }
+
+    async handleOrderSubmission() {
+        if (!this.validateAllFields()) {
+            this.showNotification('Please fix the errors in the form', 'error');
+            return;
+        }
+
+        const formData = this.getFormData();
         
         try {
-            // Get form data
-            const formData = this.getFormData();
+            // Show loading state
+            this.showLoading();
             
-            // Validate all fields
-            if (!this.validateAllFields()) {
-                this.hideLoading();
-                return;
-            }
-
-            // Use JSONBin backend for order creation
-            const order = await window.jsonbinBackend.createOrder(formData);
+            // Generate order
+            const order = await this.createOrder(formData);
             
-            // Also save to localStorage for immediate tracking
-            this.saveOrderToLocalStorage(order);
+            // Show success
+            this.showOrderSuccess(order);
             
-            // Send WhatsApp confirmations
-            const whatsappUrls = await window.jsonbinBackend.sendOrderConfirmation(order);
-            
-            // Display order code
-            this.displayOrderCode(order);
-            
-            // Open WhatsApp for customer
-            setTimeout(() => {
-                window.open(whatsappUrls.customerUrl, '_blank');
-            }, 1000);
+            // Send notifications
+            await this.sendNotifications(order);
             
         } catch (error) {
-            console.error('Error creating order:', error);
-            alert('There was an issue creating your order. Please try again or contact us directly.');
+            console.error('Order creation failed:', error);
+            this.showNotification('Failed to create order. Please try again.', 'error');
         } finally {
             this.hideLoading();
         }
     }
 
     validateAllFields() {
-        const fields = document.querySelectorAll('#orderForm input[required], #orderForm select[required], #orderForm textarea[required]');
+        const requiredFields = document.querySelectorAll('#orderForm [required]');
         let allValid = true;
         
-        fields.forEach(field => {
+        requiredFields.forEach(field => {
             if (!this.validateField(field)) {
                 allValid = false;
             }
@@ -173,193 +236,223 @@ class OrderCodeGenerator {
         return allValid;
     }
 
-    showLoading() {
-        const submitBtn = document.querySelector('#orderForm button[type="submit"]');
-        submitBtn.disabled = true;
-        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Creating Order...';
-        
-        document.body.classList.add('loading');
-    }
-
-    hideLoading() {
-        const submitBtn = document.querySelector('#orderForm button[type="submit"]');
-        submitBtn.disabled = false;
-        submitBtn.innerHTML = '<i class="fas fa-qrcode"></i> Generate Order Code';
-        
-        document.body.classList.remove('loading');
-    }
-
     getFormData() {
         return {
-            customer_name: document.getElementById('customerName').value.trim(),
-            customer_phone: document.getElementById('customerPhone').value.trim(),
-            customer_email: document.getElementById('customerEmail').value.trim(),
-            customer_hostel: document.getElementById('customerHostel').value.trim(),
-            device_brand: document.getElementById('deviceBrand').value,
-            device_model: document.getElementById('deviceModel').value.trim(),
-            repair_type: document.getElementById('repairTypeGen').value,
-            urgency_level: document.getElementById('urgencyLevel').value,
-            issue_description: document.getElementById('issueDescription').value.trim()
+            customerName: document.getElementById('customerName').value.trim(),
+            customerPhone: document.getElementById('customerPhone').value.trim(),
+            customerEmail: document.getElementById('customerEmail').value.trim(),
+            customerHostel: document.getElementById('customerHostel').value.trim(),
+            deviceBrand: document.getElementById('deviceBrand').value,
+            deviceModel: document.getElementById('deviceModel').value.trim(),
+            repairType: document.getElementById('repairTypeGen').value,
+            urgencyLevel: document.getElementById('urgencyLevel').value,
+            issueDescription: document.getElementById('issueDescription').value.trim()
         };
+    }
+
+    async createOrder(formData) {
+        // Try JSONBin backend first
+        if (window.jsonbinBackend) {
+            try {
+                const order = await window.jsonbinBackend.createOrder(formData);
+                this.saveOrderToLocalStorage(order);
+                return order;
+            } catch (error) {
+                console.warn('JSONBin backend failed, using local storage:', error);
+            }
+        }
+        
+        // Fallback to local storage
+        return this.createLocalOrder(formData);
+    }
+
+    createLocalOrder(formData) {
+        this.orderCounter++;
+        this.saveOrderCounter();
+        
+        const orderCode = `CF-${new Date().getFullYear()}-${this.orderCounter.toString().padStart(4, '0')}`;
+        
+        const order = {
+            id: Date.now().toString(),
+            order_code: orderCode,
+            ...formData,
+            status: 'Order Received',
+            progress: 10,
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString(),
+            estimated_completion: this.calculateCompletionTime(formData.urgencyLevel),
+            steps: {
+                received: new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }),
+                diagnosis: 'Pending',
+                repair: 'Pending',
+                quality: 'Pending',
+                ready: 'Pending'
+            },
+            updates: [
+                {
+                    icon: 'fas fa-clipboard-check',
+                    color: 'text-green-400',
+                    bgColor: 'bg-green-400/10',
+                    message: 'Order received and queued for diagnosis',
+                    time: new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })
+                }
+            ],
+            technician: {
+                name: 'Abdul Latif Bright (Spice BlaQ)',
+                role: 'Founder & Repair Specialist'
+            }
+        };
+        
+        this.saveOrderToLocalStorage(order);
+        return order;
     }
 
     saveOrderToLocalStorage(order) {
         const savedOrders = JSON.parse(localStorage.getItem('campusFixOrders') || '{}');
-        savedOrders[order.order_code] = {
-            code: order.order_code,
-            device: `${order.device_brand} ${order.device_model}`,
-            repair: order.repair_type,
-            status: order.status,
-            completion: new Date(order.estimated_completion).toLocaleString(),
-            progress: order.progress,
-            steps: order.steps,
-            technician: {
-                name: "Abdul Latif Bright (Spice BlaQ)",
-                role: "Founder & Repair Specialist"
-            },
-            updates: order.updates,
-            estTime: this.calculateTimeRemaining(order.urgency_level),
-            readyTime: this.calculateReadyTime(order.urgency_level)
-        };
+        savedOrders[order.order_code] = order;
         localStorage.setItem('campusFixOrders', JSON.stringify(savedOrders));
     }
 
-    calculateTimeRemaining(urgency) {
-        switch (urgency) {
-            case 'Emergency': return '4-6 hours';
-            case 'Express': return 'Same day';
-            default: return '2-3 days';
-        }
-    }
-
-    calculateReadyTime(urgency) {
+    calculateCompletionTime(urgency) {
         const now = new Date();
-        let readyTime;
+        let completionTime;
 
         switch (urgency) {
             case 'Emergency':
-                readyTime = new Date(now.getTime() + 6 * 60 * 60 * 1000);
+                completionTime = new Date(now.getTime() + 6 * 60 * 60 * 1000);
                 break;
             case 'Express':
-                readyTime = new Date(now.getTime() + 8 * 60 * 60 * 1000);
+                completionTime = new Date(now.getTime() + 24 * 60 * 60 * 1000);
                 break;
             default:
-                readyTime = new Date(now.getTime() + 24 * 60 * 60 * 1000);
+                completionTime = new Date(now.getTime() + 3 * 24 * 60 * 60 * 1000);
         }
 
-        return readyTime.toLocaleTimeString('en-US', { 
-            hour: '2-digit', 
-            minute: '2-digit'
-        });
+        return completionTime.toISOString();
     }
 
-    displayOrderCode(order) {
-        // Update display elements
-        document.getElementById('generatedOrderCode').textContent = order.order_code;
-        document.getElementById('displayCustomerName').textContent = order.customer_name;
-        document.getElementById('displayDeviceInfo').textContent = `${order.device_brand} ${order.device_model}`;
-        document.getElementById('displayRepairType').textContent = order.repair_type;
-        document.getElementById('displayUrgency').textContent = order.urgency_level;
-
-        // Generate simple QR code text
-        this.generateQRCode(order.order_code);
-
-        // Show order code display
-        document.getElementById('generationForm').classList.add('hidden');
-        document.getElementById('orderCodeDisplay').classList.remove('hidden');
-
-        // Scroll to top of display
-        document.getElementById('orderCodeDisplay').scrollIntoView({ behavior: 'smooth' });
-
-        // Add success animation
-        document.getElementById('orderCodeDisplay').classList.add('success-animation');
-    }
-
-    generateQRCode(orderCode) {
-        const qrContainer = document.getElementById('qrCodeContainer');
-        qrContainer.innerHTML = `
-            <div class="qr-content">
-                <div class="qr-text">SCAN TO TRACK</div>
-                <div class="qr-code-text">${orderCode}</div>
-                <div class="qr-brand">CampusFix UENR</div>
-            </div>
-        `;
-    }
-
-    trackGeneratedOrder() {
-        const orderCode = document.getElementById('generatedOrderCode').textContent;
+    showOrderSuccess(order) {
+        // You would typically show a success modal or redirect
+        this.showNotification(`Order ${order.order_code} created successfully!`, 'success');
         
-        // Navigate to tracker section and auto-fill the code
-        document.getElementById('orderIdInput').value = orderCode;
-        
-        // Scroll to tracker section
-        document.getElementById('tracker').scrollIntoView({ behavior: 'smooth' });
-        
-        // Trigger track order
+        // Scroll to tracker and auto-fill
         setTimeout(() => {
+            document.getElementById('orderIdInput').value = order.order_code;
+            document.getElementById('tracker').scrollIntoView({ behavior: 'smooth' });
+            
             if (window.liveTracker) {
                 window.liveTracker.trackOrder();
             }
         }, 1000);
     }
 
-    printOrderDetails() {
-        const printContent = `
-            <div class="print-container">
-                <h2>CampusFix UENR</h2>
-                <h3>Order Confirmation</h3>
-                <div class="order-code-print">
-                    ${document.getElementById('generatedOrderCode').textContent}
-                </div>
-                <div class="order-details-print">
-                    <p><strong>Customer:</strong> ${document.getElementById('displayCustomerName').textContent}</p>
-                    <p><strong>Device:</strong> ${document.getElementById('displayDeviceInfo').textContent}</p>
-                    <p><strong>Repair:</strong> ${document.getElementById('displayRepairType').textContent}</p>
-                    <p><strong>Urgency:</strong> ${document.getElementById('displayUrgency').textContent}</p>
-                    <p class="print-note">
-                        Track your order at: campusfix-uenr.com/track
-                    </p>
-                </div>
-            </div>
-        `;
-
-        const printWindow = window.open('', '_blank');
-        printWindow.document.write(`
-            <!DOCTYPE html>
-            <html>
-            <head>
-                <title>CampusFix Order Confirmation</title>
-                <style>
-                    body { font-family: Arial, sans-serif; padding: 20px; }
-                    .print-container { text-align: center; max-width: 400px; margin: 0 auto; }
-                    h2 { color: #00D8A7; margin-bottom: 10px; }
-                    h3 { margin-bottom: 20px; }
-                    .order-code-print { font-size: 24px; font-weight: bold; margin: 20px 0; color: #00D8A7; }
-                    .order-details-print { text-align: left; margin-top: 20px; }
-                    .print-note { margin-top: 20px; font-size: 12px; color: #666; }
-                </style>
-            </head>
-            <body>${printContent}</body>
-            </html>
-        `);
-        printWindow.document.close();
-        printWindow.print();
+    async sendNotifications(order) {
+        // Send WhatsApp message to customer
+        const customerMessage = this.generateCustomerMessage(order);
+        const customerUrl = `https://wa.me/${order.customerPhone.replace(/\D/g, '')}?text=${encodeURIComponent(customerMessage)}`;
+        
+        // Send WhatsApp message to admin
+        const adminMessage = this.generateAdminMessage(order);
+        const adminUrl = `https://wa.me/233246912468?text=${encodeURIComponent(adminMessage)}`;
+        
+        // Open WhatsApp for customer
+        setTimeout(() => {
+            window.open(customerUrl, '_blank');
+        }, 1500);
+        
+        // You could automatically send to admin via backend
+        console.log('Admin notification:', adminUrl);
     }
 
-    resetForm() {
-        document.getElementById('orderForm').reset();
-        document.getElementById('orderCodeDisplay').classList.add('hidden');
-        document.getElementById('generationForm').classList.remove('hidden');
-        
-        // Clear any error messages
-        document.querySelectorAll('.error-message').forEach(error => error.remove());
-        document.querySelectorAll('.error-shake').forEach(field => field.classList.remove('error-shake', 'border-red-400'));
-        
-        // Scroll to form
-        document.getElementById('generationForm').scrollIntoView({ behavior: 'smooth' });
+    generateCustomerMessage(order) {
+        return `✅ *CampusFix UENR - Order Confirmation*
+
+📦 *Order Code:* ${order.order_code}
+👤 *Customer:* ${order.customerName}
+📱 *Device:* ${order.deviceBrand} ${order.deviceModel}
+🔧 *Repair:* ${order.repairType}
+⚡ *Urgency:* ${order.urgencyLevel}
+🏠 *Hostel:* ${order.customerHostel}
+
+👨‍💼 *Repair Technician:* Abdul Latif Bright (Spice BlaQ)
+
+📋 *Next Steps:*
+1. I'll contact you within 30 minutes
+2. Free hostel pickup will be arranged
+3. Track progress using your order code
+
+⏰ *Estimated Completion:* ${new Date(order.estimated_completion).toLocaleDateString('en-GB', { 
+    weekday: 'short', 
+    day: 'numeric', 
+    month: 'short',
+    hour: '2-digit',
+    minute: '2-digit'
+})}
+
+💬 *Direct Contact:* https://wa.me/233246912468
+📞 *Call:* 0246912468
+
+*– CampusFix UENR 🛠️*`;
     }
 
-    // Local storage methods
+    generateAdminMessage(order) {
+        return `🆕 *NEW REPAIR ORDER - CampusFix*
+
+📦 *Order Code:* ${order.order_code}
+👤 *Customer:* ${order.customerName}
+📞 *Phone:* ${order.customerPhone}
+📱 *Device:* ${order.deviceBrand} ${order.deviceModel}
+🔧 *Repair:* ${order.repairType}
+⚡ *Urgency:* ${order.urgencyLevel}
+🏠 *Hostel:* ${order.customerHostel}
+
+📝 *Issue Description:*
+${order.issueDescription}
+
+⏰ *Estimated Completion:* ${new Date(order.estimated_completion).toLocaleDateString('en-GB')}
+
+💬 *Contact Customer:* https://wa.me/${order.customerPhone.replace(/\D/g, '')}
+
+*– New order received!*`;
+    }
+
+    showLoading() {
+        const submitBtn = document.querySelector('#orderForm button[type="submit"]');
+        if (submitBtn) {
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Creating Order...';
+        }
+    }
+
+    hideLoading() {
+        const submitBtn = document.querySelector('#orderForm button[type="submit"]');
+        if (submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = '<i class="fas fa-qrcode"></i> Generate Order Code';
+        }
+    }
+
+    showNotification(message, type = 'info') {
+        if (window.campusFixApp && window.campusFixApp.showNotification) {
+            window.campusFixApp.showNotification(message, type);
+        } else {
+            alert(message); // Fallback
+        }
+    }
+
+    // Utility methods
+    debounce(func, wait) {
+        let timeout;
+        return function executedFunction(...args) {
+            const later = () => {
+                clearTimeout(timeout);
+                func(...args);
+            };
+            clearTimeout(timeout);
+            timeout = setTimeout(later, wait);
+        };
+    }
+
     loadOrderCounter() {
         return parseInt(localStorage.getItem('campusFixOrderCounter')) || 2580;
     }
@@ -367,46 +460,9 @@ class OrderCodeGenerator {
     saveOrderCounter() {
         localStorage.setItem('campusFixOrderCounter', this.orderCounter);
     }
-
-    saveOrder(order) {
-        this.generatedOrders[order.code] = order;
-        localStorage.setItem('campusFixOrders', JSON.stringify(this.generatedOrders));
-    }
-
-    loadSavedOrders() {
-        const saved = localStorage.getItem('campusFixOrders');
-        return saved ? JSON.parse(saved) : {};
-    }
-}
-
-// Share functions
-function shareViaWhatsApp() {
-    const orderCode = document.getElementById('generatedOrderCode').textContent;
-    const message = `My CampusFix UENR Order Code: ${orderCode}\nTrack my repair: campusfix-uenr.com/track`;
-    const url = `https://wa.me/?text=${encodeURIComponent(message)}`;
-    window.open(url, '_blank');
-}
-
-function copyOrderCode() {
-    const orderCode = document.getElementById('generatedOrderCode').textContent;
-    navigator.clipboard.writeText(orderCode).then(() => {
-        // Show copied notification
-        const copyBtn = document.getElementById('copyCode');
-        const originalText = copyBtn.innerHTML;
-        copyBtn.innerHTML = '<i class="fas fa-check"></i> Copied!';
-        setTimeout(() => {
-            copyBtn.innerHTML = originalText;
-        }, 2000);
-    }).catch(() => {
-        alert('Failed to copy order code. Please copy manually: ' + orderCode);
-    });
-}
-
-function saveAsImage() {
-    alert('Screenshot this page to save your order details');
 }
 
 // Initialize when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
-    window.orderGenerator = new OrderCodeGenerator();
+    window.orderGenerator = new OrderGenerator();
 });
