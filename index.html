@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Campus Fix UENR → Student-Run Phone Repair | 70% Cheaper | Same-Day</title>
+  <meta name="description" content="UENR's trusted student-run phone repair service. 70% cheaper than town. Same-day repairs with free hostel pickup. Screen, battery & charging port fixes."/>
+  
+  <!-- Fonts & Icons -->
+  <link href="https://fonts.googleapis.com/css2?family=Clash+Display:wght@700;800&family=Satoshi:wght@400;500;700;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <!-- Our CSS -->
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="brand-pattern">
+  <!-- Emergency Toggle -->
+  <button id="emergencyToggle" class="fixed top-4 right-4 z-50 bg-red-600 px-4 py-2 rounded-full text-sm hover:scale-110 transition shadow-lg flex items-center gap-2 z-50">
+    <span>🚨</span>
+    <span>Emergency Mode</span>
+  </button>
+
+  <!-- WhatsApp Float -->
+  <a href="https://wa.me/233246912468?text=Hi%20CampusFix%20UENR!%20My%20phone%20is%20broken%20📱" 
+     class="whatsapp-float">
+    <i class="fab fa-whatsapp"></i>
+    WhatsApp Us
+  </a>
+
+  <!-- Navigation -->
+  <header class="glass fixed top-0 left-0 right-0 z-40 py-4">
+    <div class="container">
+      <div class="logo">
+        <div class="logo-icon">
+          <i class="fas fa-tools"></i>
+        </div>
+        <span>Campus<span class="brand-gradient">Fix</span></span>
+      </div>
+      
+      <nav class="nav-desktop">
+        <a href="#home" class="nav-link">Home</a>
+        <a href="#services" class="nav-link">Services</a>
+        <a href="#pricing" class="nav-link">Pricing</a>
+        <a href="#tracker" class="nav-link">Track Order</a>
+        <a href="#generate" class="nav-link">Get Order Code</a>
+        <a href="#testimonials" class="nav-link">Reviews</a>
+        <a href="#contact" class="btn-primary">Get Quote</a>
+      </nav>
+      
+      <button id="mobileMenuButton" class="mobile-menu-btn">
+        <i class="fas fa-bars"></i>
+      </button>
+    </div>
+  </header>
+
+  <!-- Mobile Menu -->
+  <div id="mobileMenu" class="mobile-menu">
+    <button id="closeMobileMenu" class="close-mobile-menu">
+      <i class="fas fa-times"></i>
+    </button>
+    <nav class="mobile-nav">
+      <a href="#home" class="nav-link">Home</a>
+      <a href="#services" class="nav-link">Services</a>
+      <a href="#pricing" class="nav-link">Pricing</a>
+      <a href="#tracker" class="nav-link">Track Order</a>
+      <a href="#generate" class="nav-link">Get Order Code</a>
+      <a href="#testimonials" class="nav-link">Reviews</a>
+      <a href="#contact" class="btn-primary">Get Quote</a>
+    </nav>
+  </div>
+
+  <!-- Hero Section -->
+  <section id="home" class="hero">
+    <!-- Your existing hero section content goes here -->
+    <!-- I'll keep it brief for this example -->
+    <div class="container">
+      <div class="hero-content">
+        <div class="repair-badge">
+          <i class="fas fa-bolt"></i>
+          <span>UENR's #1 Student-Run Repair Service</span>
+        </div>
+        
+        <h1 class="hero-title">
+          Phone Broken?<br>
+          <span class="brand-gradient">We'll Fix It</span><br>
+          Today.
+        </h1>
+        
+        <p class="hero-description">
+          Same-day phone repairs at UENR for up to <span class="highlight">70% less</span> than town prices. Free hostel pickup & delivery included.
+        </p>
+        
+        <div class="hero-buttons">
+          <a href="https://wa.me/233246912468" class="btn-primary pulse-glow">
+            <i class="fab fa-whatsapp"></i>
+            WhatsApp Now
+          </a>
+          <a href="tel:+233246912468" class="btn-secondary">
+            <i class="fas fa-phone"></i>
+            Call (024) 691-2468
+          </a>
+        </div>
+        
+        <div class="slots-container glass">
+          <div class="slots-header">
+            <span class="slots-text">Same-day slots available:</span>
+            <span id="slotsCount" class="slots-count">5</span>
+          </div>
+          <div class="slots-indicator">
+            <div id="slotsProgress" class="slots-progress"></div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="hero-visual">
+        <!-- Your phone mockup code -->
+        <div class="phone-mockup floating">
+          <div class="phone-screen">
+            <div class="phone-icon">
+              <i class="fas fa-tools"></i>
+            </div>
+            <h3>CampusFix UENR</h3>
+            <p>Your phone repair solution</p>
+            <!-- Rest of phone content -->
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Add your other sections here with simplified structure -->
+  <!-- Services, Pricing, Tracker, etc. -->
+
+  <!-- Load JavaScript -->
+  <script src="script.js"></script>
+  <script src="forms-handler.js"></script>
+</body>
+</html>
