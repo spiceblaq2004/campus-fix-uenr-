@@ -1212,3 +1212,233 @@
     grid-template-columns: repeat(2, 1fr);
   }
 }
+/* Enhanced Components with Animations */
+
+/* Loading State */
+body:not(.loaded) * {
+    animation: none !important;
+}
+
+/* Enhanced Service Cards */
+.service-card .service-features li {
+    opacity: 0;
+    transform: translateX(-20px);
+    animation: slideInRight 0.5s ease forwards;
+}
+
+.service-card .service-features li:nth-child(1) { animation-delay: 0.1s; }
+.service-card .service-features li:nth-child(2) { animation-delay: 0.2s; }
+.service-card .service-features li:nth-child(3) { animation-delay: 0.3s; }
+
+.service-card:hover .service-features li {
+    animation-delay: 0s !important;
+}
+
+/* Enhanced Stats */
+.stat-card .stat-number {
+    display: inline-block;
+}
+
+/* Enhanced Process Steps */
+.process-step {
+    opacity: 0;
+    transform: translateX(-30px);
+}
+
+.process-step.visible {
+    animation: slideInRight 0.6s ease forwards;
+}
+
+/* Enhanced Testimonials */
+.testimonial-card {
+    opacity: 0;
+    transform: translateY(30px);
+}
+
+.testimonial-card.visible {
+    animation: fadeInUp 0.6s ease forwards;
+}
+
+/* Enhanced Form Elements */
+.form-group {
+    position: relative;
+}
+
+.form-group label {
+    transition: all 0.3s ease;
+}
+
+.form-input:focus + label,
+.form-select:focus + label,
+.form-textarea:focus + label {
+    transform: translateY(-25px) scale(0.9);
+    color: var(--primary);
+}
+
+/* Enhanced Price Items */
+.price-item {
+    transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.price-item:hover {
+    transform: translateX(10px) scale(1.02);
+}
+
+.price-item:hover .price-range {
+    color: var(--primary);
+    transform: scale(1.1);
+}
+
+.price-range {
+    transition: all 0.3s ease;
+}
+
+/* Enhanced Contact Items */
+.contact-item {
+    transition: all 0.3s ease;
+    opacity: 0;
+    transform: translateY(20px);
+}
+
+.contact-item.visible {
+    animation: fadeInUp 0.6s ease forwards;
+}
+
+.contact-item:hover {
+    transform: translateY(-5px);
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.contact-item:hover i {
+    transform: scale(1.2);
+    color: var(--primary);
+}
+
+.contact-item i {
+    transition: all 0.3s ease;
+}
+
+/* Enhanced Repair Badge */
+.repair-badge {
+    animation: bounceIn 1s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+/* Enhanced Slots Indicator */
+.slots-card {
+    animation: pulse-glow 2s infinite;
+}
+
+@keyframes pulse-glow {
+    0%, 100% {
+        box-shadow: 0 0 20px rgba(0, 216, 167, 0.3);
+    }
+    50% {
+        box-shadow: 0 0 30px rgba(0, 216, 167, 0.6);
+    }
+}
+
+/* Enhanced Mobile Menu */
+.mobile-nav .nav-link {
+    opacity: 0;
+    transform: translateY(20px);
+}
+
+.mobile-nav .nav-link.slide-in-up-stagger {
+    animation: slideInUpStagger 0.5s ease forwards;
+}
+
+/* Enhanced Section Titles */
+.section-title {
+    position: relative;
+    overflow: hidden;
+}
+
+.section-title::after {
+    content: '';
+    position: absolute;
+    bottom: -10px;
+    left: 0;
+    width: 0;
+    height: 4px;
+    background: linear-gradient(90deg, var(--primary), var(--secondary));
+    transition: width 0.6s ease;
+}
+
+.section-entrance.visible .section-title::after {
+    width: 60%;
+}
+
+/* Enhanced Brand Gradient Text */
+.brand-gradient {
+    background: linear-gradient(135deg, var(--primary), var(--secondary), var(--accent));
+    background-size: 200% 200%;
+    animation: gradient-shift 3s ease infinite;
+}
+
+/* Enhanced Glass Effect */
+.glass {
+    position: relative;
+    overflow: hidden;
+}
+
+.glass::after {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(45deg, transparent, rgba(255,255,255,0.1), transparent);
+    transform: rotate(45deg);
+    transition: all 0.6s ease;
+    opacity: 0;
+}
+
+.glass:hover::after {
+    opacity: 1;
+    animation: glass-shine 1.5s ease;
+}
+
+@keyframes glass-shine {
+    0% {
+        transform: rotate(45deg) translateX(-100%);
+    }
+    100% {
+        transform: rotate(45deg) translateX(100%);
+    }
+}
+
+/* Enhanced Button Icons */
+.btn-primary i, .btn-secondary i {
+    transition: transform 0.3s ease;
+}
+
+.btn-primary:hover i, .btn-secondary:hover i {
+    transform: scale(1.2) translateX(3px);
+}
+
+/* Enhanced Social Links */
+.social-link {
+    transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.social-link:hover {
+    transform: translateY(-3px) scale(1.1);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+}
+
+/* Enhanced Demo Order Buttons */
+.demo-order-btn {
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.demo-order-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,
