@@ -1,50 +1,35 @@
-// ===== ORDER CODE GENERATION SYSTEM =====
+// ================================
+// ORDER CODE GENERATION SYSTEM
+// ================================
 
 class OrderCodeGenerator {
     constructor() {
         this.orderCounter = this.loadOrderCounter();
         this.generatedOrders = this.loadSavedOrders();
-        this.init();
-    }
-
-    init() {
         this.initializeEventListeners();
-        console.log('Order Generator initialized 🎫');
     }
 
     initializeEventListeners() {
         // Form submission
-        const orderForm = document.getElementById('orderForm');
-        if (orderForm) {
-            orderForm.addEventListener('submit', (e) => {
-                e.preventDefault();
-                this.generateOrderCode();
-            });
-        }
+        document.getElementById('orderForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            this.generateOrderCode();
+        });
 
         // Track this order button
-        const trackThisOrder = document.getElementById('trackThisOrder');
-        if (trackThisOrder) {
-            trackThisOrder.addEventListener('click', () => {
-                this.trackGeneratedOrder();
-            });
-        }
+        document.getElementById('trackThisOrder').addEventListener('click', () => {
+            this.trackGeneratedOrder();
+        });
 
         // Print order details
-        const printOrderCode = document.getElementById('printOrderCode');
-        if (printOrderCode) {
-            printOrderCode.addEventListener('click', () => {
-                this.printOrderDetails();
-            });
-        }
+        document.getElementById('printOrderCode').addEventListener('click', () => {
+            this.printOrderDetails();
+        });
 
         // New order button
-        const newOrder = document.getElementById('newOrder');
-        if (newOrder) {
-            newOrder.addEventListener('click', () => {
-                this.resetForm();
-            });
-        }
+        document.getElementById('newOrder').addEventListener('click', () => {
+            this.resetForm();
+        });
     }
 
     generateOrderCode() {
@@ -221,31 +206,23 @@ class OrderCodeGenerator {
 
     generateQRCode(orderCode) {
         const qrContainer = document.getElementById('qrCodeContainer');
-        if (qrContainer) {
-            qrContainer.innerHTML = `
-                <div style="text-align: center; font-family: monospace; color: #0A0A1A;">
-                    <div style="font-size: 12px; margin-bottom: 5px; font-weight: bold;">SCAN TO TRACK</div>
-                    <div style="font-size: 10px; letter-spacing: 1px; margin-bottom: 5px;">${orderCode}</div>
-                    <div style="font-size: 8px;">CampusFix UENR</div>
-                </div>
-            `;
-        }
+        qrContainer.innerHTML = `
+            <div class="qr-content">
+                <div class="qr-text">SCAN TO TRACK</div>
+                <div class="qr-code-text">${orderCode}</div>
+                <div class="qr-brand">CampusFix UENR</div>
+            </div>
+        `;
     }
 
     trackGeneratedOrder() {
         const orderCode = document.getElementById('generatedOrderCode').textContent;
         
         // Navigate to tracker section and auto-fill the code
-        const orderIdInput = document.getElementById('orderIdInput');
-        if (orderIdInput) {
-            orderIdInput.value = orderCode;
-        }
+        document.getElementById('orderIdInput').value = orderCode;
         
         // Scroll to tracker section
-        const trackerSection = document.getElementById('tracker');
-        if (trackerSection) {
-            trackerSection.scrollIntoView({ behavior: 'smooth' });
-        }
+        document.getElementById('tracker').scrollIntoView({ behavior: 'smooth' });
         
         // Trigger track order
         setTimeout(() => {
@@ -257,26 +234,43 @@ class OrderCodeGenerator {
 
     printOrderDetails() {
         const printContent = `
-            <div style="text-align: center; padding: 20px; font-family: Arial, sans-serif;">
-                <h2 style="color: #00D8A7; margin-bottom: 10px;">CampusFix UENR</h2>
-                <h3 style="margin-bottom: 20px;">Order Confirmation</h3>
-                <div style="font-size: 24px; font-weight: bold; margin: 20px 0; color: #00D8A7;">
+            <div class="print-container">
+                <h2>CampusFix UENR</h2>
+                <h3>Order Confirmation</h3>
+                <div class="order-code-print">
                     ${document.getElementById('generatedOrderCode').textContent}
                 </div>
-                <div style="text-align: left; max-width: 400px; margin: 0 auto;">
+                <div class="order-details-print">
                     <p><strong>Customer:</strong> ${document.getElementById('displayCustomerName').textContent}</p>
                     <p><strong>Device:</strong> ${document.getElementById('displayDeviceInfo').textContent}</p>
                     <p><strong>Repair:</strong> ${document.getElementById('displayRepairType').textContent}</p>
                     <p><strong>Urgency:</strong> ${document.getElementById('displayUrgency').textContent}</p>
-                    <p style="margin-top: 20px; font-size: 12px; color: #666;">
-                        Track your order at: ${window.location.href}
+                    <p class="print-note">
+                        Track your order at: campusfix-uenr.com/track
                     </p>
                 </div>
             </div>
         `;
 
         const printWindow = window.open('', '_blank');
-        printWindow.document.write(printContent);
+        printWindow.document.write(`
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <title>CampusFix Order Confirmation</title>
+                <style>
+                    body { font-family: Arial, sans-serif; padding: 20px; }
+                    .print-container { text-align: center; max-width: 400px; margin: 0 auto; }
+                    h2 { color: #00D8A7; margin-bottom: 10px; }
+                    h3 { margin-bottom: 20px; }
+                    .order-code-print { font-size: 24px; font-weight: bold; margin: 20px 0; color: #00D8A7; }
+                    .order-details-print { text-align: left; margin-top: 20px; }
+                    .print-note { margin-top: 20px; font-size: 12px; color: #666; }
+                </style>
+            </head>
+            <body>${printContent}</body>
+            </html>
+        `);
         printWindow.document.close();
         printWindow.print();
     }
@@ -292,43 +286,10 @@ class OrderCodeGenerator {
 
     sendConfirmation(order) {
         // Simulate sending confirmation
-        const message = `Hi ${order.customerName}! Your CampusFix order ${order.code} has been received. We'll contact you soon about your ${order.deviceBrand} ${order.deviceModel} ${order.repairType}. Track: ${window.location.href}`;
+        const message = `Hi ${order.customerName}! Your CampusFix order ${order.code} has been received. We'll contact you soon about your ${order.deviceBrand} ${order.deviceModel} ${order.repairType}. Track: campusfix-uenr.com/track`;
         
+        // In production, this would make an API call to send SMS/Email
         console.log('Confirmation sent:', message);
-        
-        // Show confirmation message
-        this.showNotification('Order created successfully! We will contact you shortly.', 'success');
-    }
-
-    showNotification(message, type = 'info') {
-        const notification = document.createElement('div');
-        notification.className = `notification ${type} glass`;
-        notification.innerHTML = `
-            <div class="flex items-center gap-3">
-                <i class="fas fa-${type === 'success' ? 'check' : 'info'}"></i>
-                <span>${message}</span>
-            </div>
-        `;
-        
-        notification.style.cssText = `
-            position: fixed;
-            top: 100px;
-            right: 20px;
-            z-index: 1000;
-            padding: 1rem 1.5rem;
-            border-radius: 12px;
-            max-width: 300px;
-            animation: slideInRight 0.5s ease-out;
-        `;
-
-        document.body.appendChild(notification);
-
-        // Auto remove after 5 seconds
-        setTimeout(() => {
-            if (notification.parentNode) {
-                notification.remove();
-            }
-        }, 5000);
     }
 
     // Local storage methods
@@ -356,15 +317,10 @@ class OrderCodeGenerator {
     }
 }
 
-// Initialize when DOM is loaded
-document.addEventListener('DOMContentLoaded', () => {
-    window.orderGenerator = new OrderCodeGenerator();
-});
-
-// Share functions (global for HTML onclick)
+// Share functions
 function shareViaWhatsApp() {
     const orderCode = document.getElementById('generatedOrderCode').textContent;
-    const message = `My CampusFix UENR Order Code: ${orderCode}\nTrack my repair: ${window.location.href}`;
+    const message = `My CampusFix UENR Order Code: ${orderCode}\nTrack my repair: campusfix-uenr.com/track`;
     const url = `https://wa.me/?text=${encodeURIComponent(message)}`;
     window.open(url, '_blank');
 }
@@ -373,18 +329,14 @@ function copyOrderCode() {
     const orderCode = document.getElementById('generatedOrderCode').textContent;
     navigator.clipboard.writeText(orderCode).then(() => {
         alert('Order code copied to clipboard!');
-    }).catch(() => {
-        // Fallback for older browsers
-        const textArea = document.createElement('textarea');
-        textArea.value = orderCode;
-        document.body.appendChild(textArea);
-        textArea.select();
-        document.execCommand('copy');
-        document.body.removeChild(textArea);
-        alert('Order code copied to clipboard!');
     });
 }
 
 function saveAsImage() {
-    alert('Take a screenshot of this page to save your order details for now. We\'ll add proper image saving later!');
+    alert('Screenshot this page to save your order details');
 }
+
+// Initialize when DOM is loaded
+document.addEventListener('DOMContentLoaded', () => {
+    window.orderGenerator = new OrderCodeGenerator();
+});
