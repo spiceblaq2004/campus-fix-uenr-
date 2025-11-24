@@ -1,162 +1,100 @@
-// ===== MAIN WEBSITE FUNCTIONALITY =====
+// ================================
+// MAIN WEBSITE FUNCTIONALITY
+// ================================
 
 class CampusFixApp {
     constructor() {
         this.emergencyMode = false;
         this.availableSlots = 5;
-        this.init();
+        this.initializeApp();
     }
 
-    init() {
-        this.initMobileMenu();
-        this.initEmergencyMode();
-        this.initSlotsCounter();
-        this.initSmoothScrolling();
-        this.initAIDamageScanner();
-        this.initQuoteCalculator();
-        console.log('CampusFix UENR initialized 🚀');
+    initializeApp() {
+        this.initializeMobileMenu();
+        this.initializeEmergencyToggle();
+        this.initializeSlotsCounter();
+        this.initializeSmoothScrolling();
+        this.initializeAIDamageScanner();
+        this.initializeQuoteCalculator();
     }
 
     // Mobile Menu Functionality
-    initMobileMenu() {
+    initializeMobileMenu() {
         const mobileMenuButton = document.getElementById('mobileMenuButton');
         const closeMobileMenu = document.getElementById('closeMobileMenu');
         const mobileMenu = document.getElementById('mobileMenu');
         const navLinks = document.querySelectorAll('.nav-link');
 
-        if (mobileMenuButton) {
-            mobileMenuButton.addEventListener('click', () => {
-                mobileMenu.classList.add('open');
-                document.body.style.overflow = 'hidden';
-            });
-        }
+        mobileMenuButton.addEventListener('click', () => {
+            mobileMenu.classList.add('open');
+        });
 
-        if (closeMobileMenu) {
-            closeMobileMenu.addEventListener('click', () => {
-                mobileMenu.classList.remove('open');
-                document.body.style.overflow = '';
-            });
-        }
+        closeMobileMenu.addEventListener('click', () => {
+            mobileMenu.classList.remove('open');
+        });
 
         navLinks.forEach(link => {
             link.addEventListener('click', () => {
                 mobileMenu.classList.remove('open');
-                document.body.style.overflow = '';
             });
         });
     }
 
     // Emergency Mode Toggle
-    initEmergencyMode() {
+    initializeEmergencyToggle() {
         const emergencyToggle = document.getElementById('emergencyToggle');
-        
-        if (emergencyToggle) {
-            emergencyToggle.addEventListener('click', () => {
-                this.emergencyMode = !this.emergencyMode;
-                document.body.classList.toggle('emergency-mode');
-                
-                if (this.emergencyMode) {
-                    emergencyToggle.innerHTML = '<span>🚨</span><span>Normal Mode</span>';
-                    emergencyToggle.classList.remove('bg-red-600');
-                    emergencyToggle.classList.add('bg-green-600');
-                    this.showEmergencyNotification();
-                } else {
-                    emergencyToggle.innerHTML = '<span>🚨</span><span>Emergency Mode</span>';
-                    emergencyToggle.classList.remove('bg-green-600');
-                    emergencyToggle.classList.add('bg-red-600');
-                }
-            });
-        }
-    }
 
-    showEmergencyNotification() {
-        // Create emergency notification
-        const notification = document.createElement('div');
-        notification.className = 'emergency-notification glass';
-        notification.innerHTML = `
-            <div class="flex items-center gap-3">
-                <div class="w-8 h-8 bg-red-500 rounded-full flex items-center justify-center">
-                    <i class="fas fa-exclamation-triangle text-white"></i>
-                </div>
-                <div>
-                    <p class="font-bold">Emergency Mode Activated</p>
-                    <p class="text-sm text-gray-400">We'll prioritize your repair immediately</p>
-                </div>
-            </div>
-            <button class="close-notification text-gray-400 hover:text-white">
-                <i class="fas fa-times"></i>
-            </button>
-        `;
-        
-        notification.style.cssText = `
-            position: fixed;
-            top: 100px;
-            right: 20px;
-            z-index: 1000;
-            padding: 1rem;
-            border-radius: 12px;
-            max-width: 300px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 1rem;
-            animation: slideInRight 0.5s ease-out;
-        `;
-
-        document.body.appendChild(notification);
-
-        // Add close functionality
-        notification.querySelector('.close-notification').addEventListener('click', () => {
-            notification.remove();
-        });
-
-        // Auto remove after 5 seconds
-        setTimeout(() => {
-            if (notification.parentNode) {
-                notification.remove();
+        emergencyToggle.addEventListener('click', () => {
+            this.emergencyMode = !this.emergencyMode;
+            document.body.classList.toggle('emergency-mode');
+            
+            if (this.emergencyMode) {
+                emergencyToggle.innerHTML = '<span>🚨</span><span>Normal Mode</span>';
+                emergencyToggle.style.background = '#22C55E';
+            } else {
+                emergencyToggle.innerHTML = '<span>🚨</span><span>Emergency Mode</span>';
+                emergencyToggle.style.background = '#DC2626';
             }
-        }, 5000);
+        });
     }
 
     // Slots Counter Functionality
-    initSlotsCounter() {
+    initializeSlotsCounter() {
         const slotsCount = document.getElementById('slotsCount');
         const slotsCount2 = document.getElementById('slotsCount2');
         const slotsProgress = document.getElementById('slotsProgress');
         const slotsProgress2 = document.getElementById('slotsProgress2');
 
-        if (!slotsCount) return;
+        // Update slots every 30 seconds
+        setInterval(() => {
+            this.updateSlots(slotsCount, slotsCount2, slotsProgress, slotsProgress2);
+        }, 30000);
+    }
 
-        const updateSlotsDisplay = () => {
+    updateSlots(slotsCount, slotsCount2, slotsProgress, slotsProgress2) {
+        // Randomly decrease slots occasionally to create urgency
+        if (this.availableSlots > 0 && Math.random() > 0.7) {
+            this.availableSlots--;
+            
             slotsCount.textContent = this.availableSlots;
-            if (slotsCount2) slotsCount2.textContent = this.availableSlots;
+            slotsCount2.textContent = this.availableSlots;
             
             const progressWidth = (this.availableSlots / 5) * 100;
-            if (slotsProgress) slotsProgress.style.width = `${progressWidth}%`;
-            if (slotsProgress2) slotsProgress2.style.width = `${progressWidth}%`;
+            slotsProgress.style.width = `${progressWidth}%`;
+            slotsProgress2.style.width = `${progressWidth}%`;
             
             // Change color when slots are low
             if (this.availableSlots <= 2) {
-                slotsCount.classList.add('text-red-400');
-                if (slotsCount2) slotsCount2.classList.add('text-red-400');
-                if (slotsProgress) slotsProgress.style.background = 'linear-gradient(90deg, #EF4444, #DC2626)';
-                if (slotsProgress2) slotsProgress2.style.background = 'linear-gradient(90deg, #EF4444, #DC2626)';
+                slotsCount.classList.add('text-red');
+                slotsCount2.classList.add('text-red');
+                slotsProgress.style.background = 'linear-gradient(90deg, #EF4444, #DC2626)';
+                slotsProgress2.style.background = 'linear-gradient(90deg, #EF4444, #DC2626)';
             }
-        };
-
-        // Update slots every 30 seconds to create urgency
-        setInterval(() => {
-            if (this.availableSlots > 0 && Math.random() > 0.7) {
-                this.availableSlots--;
-                updateSlotsDisplay();
-            }
-        }, 30000);
-
-        updateSlotsDisplay();
+        }
     }
 
-    // Smooth Scrolling for Navigation
-    initSmoothScrolling() {
+    // Smooth Scrolling
+    initializeSmoothScrolling() {
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
             anchor.addEventListener('click', function (e) {
                 e.preventDefault();
@@ -166,11 +104,8 @@ class CampusFixApp {
                 
                 const targetElement = document.querySelector(targetId);
                 if (targetElement) {
-                    const headerHeight = document.querySelector('.header')?.offsetHeight || 0;
-                    const targetPosition = targetElement.offsetTop - headerHeight - 20;
-                    
                     window.scrollTo({
-                        top: targetPosition,
+                        top: targetElement.offsetTop - 100,
                         behavior: 'smooth'
                     });
                 }
@@ -179,12 +114,10 @@ class CampusFixApp {
     }
 
     // AI Damage Scanner
-    initAIDamageScanner() {
+    initializeAIDamageScanner() {
         const fileUploadArea = document.getElementById('fileUploadArea');
         const damagePhoto = document.getElementById('damagePhoto');
         const scanResult = document.getElementById('scanResult');
-
-        if (!fileUploadArea) return;
 
         fileUploadArea.addEventListener('click', () => {
             damagePhoto.click();
@@ -204,107 +137,101 @@ class CampusFixApp {
             fileUploadArea.classList.remove('dragover');
             
             if (e.dataTransfer.files.length) {
-                this.handleImageUpload(e.dataTransfer.files[0]);
+                this.handleImageUpload(e.dataTransfer.files[0], scanResult);
             }
         });
 
         damagePhoto.addEventListener('change', (e) => {
             if (e.target.files.length) {
-                this.handleImageUpload(e.target.files[0]);
+                this.handleImageUpload(e.target.files[0], scanResult);
             }
         });
     }
 
-    handleImageUpload(file) {
-        const scanResult = document.getElementById('scanResult');
-        
+    handleImageUpload(file, scanResult) {
         // Validate file type and size
         if (!file.type.match('image.*')) {
-            this.showScanResult('Please upload an image file (JPG, PNG)', 'error');
+            this.showScanResult('Please upload an image file (JPG, PNG)', 'error', scanResult);
             return;
         }
         
         if (file.size > 5 * 1024 * 1024) {
-            this.showScanResult('File size must be less than 5MB', 'error');
+            this.showScanResult('File size must be less than 5MB', 'error', scanResult);
             return;
         }
         
         // Show scanning animation
         this.showScanResult(`
-            <div class="text-center py-8">
-                <div class="w-16 h-16 bg-green-500/20 rounded-full flex items-center justify-center mx-auto mb-4 scanning-animation">
-                    <i class="fas fa-search text-green-400 text-2xl"></i>
+            <div class="scanning-content">
+                <div class="scanning-icon">
+                    <i class="fas fa-search"></i>
                 </div>
-                <h3 class="text-xl font-bold mb-2">Analyzing Damage...</h3>
-                <p class="text-gray-400">Our AI is scanning your photo for damage</p>
+                <h3>Analyzing Damage...</h3>
+                <p>Our AI is scanning your photo for damage</p>
             </div>
-        `, 'scanning');
+        `, 'scanning', scanResult);
         
         // Simulate AI scanning delay
         setTimeout(() => {
-            this.generateAIAnalysis();
+            this.generateScanResult(scanResult);
         }, 3000);
     }
 
-    generateAIAnalysis() {
+    generateScanResult(scanResult) {
+        // Generate random estimate based on common repairs
         const repairs = [
             { type: 'Cracked Screen', cost: 'GH₵220 - GH₵380', time: '1-2 hours' },
             { type: 'Multiple Cracks', cost: 'GH₵280 - GH₵420', time: '2-3 hours' },
             { type: 'LCD Damage', cost: 'GH₵320 - GH₵480', time: '2-3 hours' },
-            { type: 'Minor Crack', cost: 'GH₵180 - GH₵250', time: '1 hour' },
-            { type: 'Battery Replacement Needed', cost: 'GH₵80 - GH₵150', time: '1 hour' },
-            { type: 'Charging Port Issue', cost: 'GH₵50 - GH₵120', time: '1-2 hours' }
+            { type: 'Minor Crack', cost: 'GH₵180 - GH₵250', time: '1 hour' }
         ];
         
         const randomRepair = repairs[Math.floor(Math.random() * repairs.length)];
         
         this.showScanResult(`
-            <div class="bg-green-500/10 border border-green-500/30 rounded-2xl p-6">
-                <div class="flex items-center justify-between mb-4">
-                    <h3 class="text-xl font-bold text-green-400">Damage Analysis Complete</h3>
-                    <div class="w-10 h-10 bg-green-500/20 rounded-full flex items-center justify-center">
-                        <i class="fas fa-check text-green-400"></i>
+            <div class="scan-result-success">
+                <div class="result-header">
+                    <h3>Damage Analysis Complete</h3>
+                    <div class="success-check">
+                        <i class="fas fa-check"></i>
                     </div>
                 </div>
                 
-                <div class="space-y-4">
-                    <div class="flex justify-between">
-                        <span class="text-gray-400">Issue Detected:</span>
-                        <span class="font-bold">${randomRepair.type}</span>
+                <div class="result-details">
+                    <div class="result-item">
+                        <span>Issue Detected:</span>
+                        <span>${randomRepair.type}</span>
                     </div>
                     
-                    <div class="flex justify-between">
-                        <span class="text-gray-400">Estimated Cost:</span>
-                        <span class="text-2xl font-bold text-green-400">${randomRepair.cost}</span>
+                    <div class="result-item">
+                        <span>Estimated Cost:</span>
+                        <span class="result-cost">${randomRepair.cost}</span>
                     </div>
                     
-                    <div class="flex justify-between">
-                        <span class="text-gray-400">Repair Time:</span>
-                        <span class="font-bold">${randomRepair.time}</span>
+                    <div class="result-item">
+                        <span>Repair Time:</span>
+                        <span>${randomRepair.time}</span>
                     </div>
                 </div>
                 
                 <a href="https://wa.me/233246912468?text=Hi!%20I%20just%20scanned%20my%20phone%20damage%20📸%20Can%20you%20fix%20it%20for%20${encodeURIComponent(randomRepair.cost)}?" 
-                   class="w-full mt-6 btn-primary inline-block text-center">
+                   class="btn-primary btn-full">
                     <i class="fab fa-whatsapp"></i>
                     Send Photo & Book Repair
                 </a>
             </div>
-        `, 'success');
+        `, 'success', scanResult);
     }
 
-    showScanResult(message, type) {
-        const scanResult = document.getElementById('scanResult');
-        if (!scanResult) return;
-
+    showScanResult(message, type, scanResult) {
         if (type === 'error') {
             scanResult.innerHTML = `
-                <div class="bg-red-500/10 border border-red-500/30 rounded-2xl p-6 text-center">
-                    <div class="w-16 h-16 bg-red-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
-                        <i class="fas fa-exclamation-triangle text-red-400 text-2xl"></i>
+                <div class="scan-result-error">
+                    <div class="error-icon">
+                        <i class="fas fa-exclamation-triangle"></i>
                     </div>
-                    <h3 class="text-xl font-bold text-red-400 mb-2">Upload Error</h3>
-                    <p class="text-gray-400">${message}</p>
+                    <h3>Upload Error</h3>
+                    <p>${message}</p>
                 </div>
             `;
         } else {
@@ -313,14 +240,14 @@ class CampusFixApp {
     }
 
     // Quote Calculator
-    initQuoteCalculator() {
+    initializeQuoteCalculator() {
         const quoteForm = document.getElementById('quoteForm');
         const phoneBrand = document.getElementById('phoneBrand');
         const repairType = document.getElementById('repairType');
+        const quoteResult = document.getElementById('quoteResult');
+        const estimatedCost = document.getElementById('estimatedCost');
 
-        if (!quoteForm) return;
-
-        // Price matrix
+        // Price matrix for different phone brands and repairs
         const priceMatrix = {
             'iPhone': {
                 'Screen': { min: 300, max: 450 },
@@ -360,9 +287,6 @@ class CampusFixApp {
         };
 
         const calculateQuote = () => {
-            const quoteResult = document.getElementById('quoteResult');
-            const estimatedCost = document.getElementById('estimatedCost');
-            
             const brand = phoneBrand.value;
             const repair = repairType.value;
             
