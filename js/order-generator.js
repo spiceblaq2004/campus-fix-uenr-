@@ -1,5 +1,5 @@
 // ================================
-// ENHANCED ORDER GENERATOR
+// ENHANCED ORDER GENERATOR - FIXED VERSION
 // ================================
 
 class OrderGenerator {
@@ -61,6 +61,58 @@ class OrderGenerator {
             
             .validation-success {
                 color: #10b981;
+            }
+
+            .manual-send-buttons {
+                background: rgba(99, 102, 241, 0.1);
+                border: 1px solid rgba(99, 102, 241, 0.3);
+                border-radius: 12px;
+                padding: 20px;
+                margin-top: 20px;
+                text-align: center;
+            }
+
+            .manual-send-buttons p {
+                margin-bottom: 15px;
+                color: var(--gray-300);
+            }
+
+            .send-buttons-container {
+                display: flex;
+                gap: 10px;
+                justify-content: center;
+                flex-wrap: wrap;
+            }
+
+            .success-modal {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0, 0, 0, 0.8);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                z-index: 10000;
+                backdrop-filter: blur(10px);
+            }
+
+            .success-content {
+                background: var(--gray-800);
+                border-radius: 20px;
+                padding: 30px;
+                max-width: 500px;
+                width: 90%;
+                text-align: center;
+                border: 1px solid rgba(99, 102, 241, 0.3);
+                box-shadow: var(--shadow-xl);
+            }
+
+            .success-icon {
+                font-size: 3rem;
+                color: var(--success);
+                margin-bottom: 15px;
             }
         `;
         document.head.appendChild(style);
@@ -184,8 +236,11 @@ class OrderGenerator {
                     estimatedTime = '2-3 hours';
                 }
                 
-                // You could update preview elements here
-                console.log('Preview updated:', { deviceBrand, repairType, estimatedTime });
+                // Update preview elements
+                const previewElement = document.querySelector('.order-code-preview');
+                if (previewElement) {
+                    previewElement.textContent = `CF-${new Date().getFullYear()}-XXXX`;
+                }
             }
         }, 300);
 
@@ -209,10 +264,10 @@ class OrderGenerator {
             // Generate order
             const order = await this.createOrder(formData);
             
-            // Show success
-            this.showOrderSuccess(order);
+            // Show success with WhatsApp sending
+            await this.showOrderSuccess(order);
             
-            // Send notifications
+            // Send notifications immediately
             await this.sendNotifications(order);
             
         } catch (error) {
@@ -331,37 +386,119 @@ class OrderGenerator {
         return completionTime.toISOString();
     }
 
-    showOrderSuccess(order) {
-        // You would typically show a success modal or redirect
-        this.showNotification(`Order ${order.order_code} created successfully!`, 'success');
-        
-        // Scroll to tracker and auto-fill
+    async showOrderSuccess(order) {
+        // Show success modal with order details
+        this.showSuccessModal(order);
+    }
+
+    showSuccessModal(order) {
+        const modal = document.createElement('div');
+        modal.className = 'success-modal';
+        modal.innerHTML = `
+            <div class="success-content">
+                <div class="success-icon">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <h3>Order Created Successfully! 🎉</h3>
+                <p><strong>Order Code:</strong> ${order.order_code}</p>
+                <p>We're now opening WhatsApp to send your order confirmation...</p>
+                <div class="manual-send-buttons">
+                    <p>If WhatsApp doesn't open automatically, click below:</p>
+                    <div class="send-buttons-container">
+                        <button class="btn btn-primary" onclick="window.orderGenerator.sendCustomerMessage('${order.order_code}')">
+                            <i class="fab fa-whatsapp"></i> Send to Customer
+                        </button>
+                        <button class="btn btn-secondary" onclick="window.orderGenerator.sendAdminMessage('${order.order_code}')">
+                            <i class="fab fa-whatsapp"></i> Send to Admin
+                        </button>
+                    </div>
+                </div>
+                <div style="margin-top: 20px;">
+                    <button class="btn btn-outline" onclick="window.orderGenerator.closeSuccessModal()">
+                        Close
+                    </button>
+                </div>
+            </div>
+        `;
+        document.body.appendChild(modal);
+
+        // Auto-close after 30 seconds
         setTimeout(() => {
-            document.getElementById('orderIdInput').value = order.order_code;
-            document.getElementById('tracker').scrollIntoView({ behavior: 'smooth' });
-            
-            if (window.liveTracker) {
-                window.liveTracker.trackOrder();
-            }
-        }, 1000);
+            this.closeSuccessModal();
+        }, 30000);
+    }
+
+    closeSuccessModal() {
+        const modal = document.querySelector('.success-modal');
+        if (modal) {
+            modal.remove();
+        }
     }
 
     async sendNotifications(order) {
-        // Send WhatsApp message to customer
-        const customerMessage = this.generateCustomerMessage(order);
-        const customerUrl = `https://wa.me/${order.customerPhone.replace(/\D/g, '')}?text=${encodeURIComponent(customerMessage)}`;
-        
-        // Send WhatsApp message to admin
-        const adminMessage = this.generateAdminMessage(order);
-        const adminUrl = `https://wa.me/233246912468?text=${encodeURIComponent(adminMessage)}`;
-        
-        // Open WhatsApp for customer
-        setTimeout(() => {
+        try {
+            // Generate messages
+            const customerMessage = this.generateCustomerMessage(order);
+            const adminMessage = this.generateAdminMessage(order);
+            
+            // Create WhatsApp URLs
+            const customerUrl = `https://wa.me/${order.customerPhone.replace(/\D/g, '')}?text=${encodeURIComponent(customerMessage)}`;
+            const adminUrl = `https://wa.me/233246912468?text=${encodeURIComponent(adminMessage)}`;
+            
+            // Send customer message immediately
+            console.log('Opening customer WhatsApp...');
             window.open(customerUrl, '_blank');
-        }, 1500);
+            
+            // Send admin message after short delay
+            setTimeout(() => {
+                console.log('Opening admin WhatsApp...');
+                window.open(adminUrl, '_blank');
+            }, 1000);
+
+            // Store message logs
+            this.saveMessageLogs(order, customerMessage, adminMessage);
+
+        } catch (error) {
+            console.error('Error sending notifications:', error);
+            this.showNotification('Messages failed to send automatically. Please use the manual buttons.', 'error');
+        }
+    }
+
+    // Manual send methods for the buttons
+    async sendCustomerMessage(orderCode) {
+        const savedOrders = JSON.parse(localStorage.getItem('campusFixOrders') || '{}');
+        const order = savedOrders[orderCode];
         
-        // You could automatically send to admin via backend
-        console.log('Admin notification:', adminUrl);
+        if (order) {
+            const message = this.generateCustomerMessage(order);
+            const url = `https://wa.me/${order.customerPhone.replace(/\D/g, '')}?text=${encodeURIComponent(message)}`;
+            window.open(url, '_blank');
+        }
+    }
+
+    async sendAdminMessage(orderCode) {
+        const savedOrders = JSON.parse(localStorage.getItem('campusFixOrders') || '{}');
+        const order = savedOrders[orderCode];
+        
+        if (order) {
+            const message = this.generateAdminMessage(order);
+            const url = `https://wa.me/233246912468?text=${encodeURIComponent(message)}`;
+            window.open(url, '_blank');
+        }
+    }
+
+    saveMessageLogs(order, customerMessage, adminMessage) {
+        const messageLogs = JSON.parse(localStorage.getItem('campusFixMessageLogs') || '[]');
+        
+        messageLogs.push({
+            orderCode: order.order_code,
+            customerMessage: customerMessage,
+            adminMessage: adminMessage,
+            sentAt: new Date().toISOString(),
+            customerPhone: order.customerPhone
+        });
+        
+        localStorage.setItem('campusFixMessageLogs', JSON.stringify(messageLogs));
     }
 
     generateCustomerMessage(order) {
@@ -379,7 +516,7 @@ class OrderGenerator {
 📋 *Next Steps:*
 1. I'll contact you within 30 minutes
 2. Free hostel pickup will be arranged
-3. Track progress using your order code
+3. Track progress using your order code: ${order.order_code}
 
 ⏰ *Estimated Completion:* ${new Date(order.estimated_completion).toLocaleDateString('en-GB', { 
     weekday: 'short', 
@@ -388,6 +525,9 @@ class OrderGenerator {
     hour: '2-digit',
     minute: '2-digit'
 })}
+
+🔍 *Track Your Order:*
+https://campusfix-uenr.netlify.app/#tracker
 
 💬 *Direct Contact:* https://wa.me/233246912468
 📞 *Call:* 0246912468
@@ -411,9 +551,14 @@ ${order.issueDescription}
 
 ⏰ *Estimated Completion:* ${new Date(order.estimated_completion).toLocaleDateString('en-GB')}
 
+🎯 *Action Required:*
+• Contact customer within 30 minutes
+• Schedule hostel pickup
+• Begin diagnosis process
+
 💬 *Contact Customer:* https://wa.me/${order.customerPhone.replace(/\D/g, '')}
 
-*– New order received!*`;
+*– New order received! Time to work your magic Spice! 💪*`;
     }
 
     showLoading() {
@@ -433,10 +578,12 @@ ${order.issueDescription}
     }
 
     showNotification(message, type = 'info') {
+        // Use the existing notification system from main.js
         if (window.campusFixApp && window.campusFixApp.showNotification) {
             window.campusFixApp.showNotification(message, type);
         } else {
-            alert(message); // Fallback
+            // Fallback
+            alert(message);
         }
     }
 
