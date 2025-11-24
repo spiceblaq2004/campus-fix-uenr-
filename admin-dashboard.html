@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - CampusFix</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/components.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Admin Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <div class="logo-icon">
+                    <i class="fas fa-tools"></i>
+                </div>
+                <span class="logo-text">Campus<span>Fix</span> Admin</span>
+            </div>
+            <div class="nav-menu">
+                <a href="#orders" class="nav-link active">
+                    <i class="fas fa-list"></i>
+                    <span>Orders</span>
+                </a>
+                <a href="#analytics" class="nav-link">
+                    <i class="fas fa-chart-bar"></i>
+                    <span>Analytics</span>
+                </a>
+                <button class="btn btn-outline" onclick="logout()">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Logout</span>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container" style="padding-top: 100px;">
+        <!-- Dashboard Stats -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon" style="background: rgba(99, 102, 241, 0.1); color: var(--primary);">
+                    <i class="fas fa-clock"></i>
+                </div>
+                <div class="stat-content">
+                    <h3 id="pendingCount">0</h3>
+                    <p>Pending Orders</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon" style="background: rgba(59, 130, 246, 0.1); color: #3b82f6;">
+                    <i class="fas fa-tools"></i>
+                </div>
+                <div class="stat-content">
+                    <h3 id="progressCount">0</h3>
+                    <p>In Progress</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon" style="background: rgba(16, 185, 129, 0.1); color: #10b981;">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <div class="stat-content">
+                    <h3 id="completedCount">0</h3>
+                    <p>Completed</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon" style="background: rgba(245, 158, 11, 0.1); color: #f59e0b;">
+                    <i class="fas fa-money-bill-wave"></i>
+                </div>
+                <div class="stat-content">
+                    <h3 id="revenueCount">GH₵ 0</h3>
+                    <p>Today's Revenue</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Orders Table -->
+        <div class="orders-section">
+            <h2>Recent Orders</h2>
+            <div class="search-box" style="margin-bottom: 20px;">
+                <input type="text" id="orderSearch" placeholder="Search orders...">
+            </div>
+            <div class="orders-table">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Order Code</th>
+                            <th>Customer</th>
+                            <th>Device</th>
+                            <th>Repair</th>
+                            <th>Status</th>
+                            <th>Created</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="ordersTableBody">
+                        <!-- Orders will be populated here -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Order Details Modal -->
+    <div id="orderModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Order Details - <span id="modalOrderCode"></span></h3>
+                <button class="close-btn" onclick="closeModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="order-details-grid">
+                    <div class="detail-group">
+                        <h4>Customer Information</h4>
+                        <p><strong>Name:</strong> <span id="detailCustomerName"></span></p>
+                        <p><strong>Phone:</strong> <span id="detailCustomerPhone"></span></p>
+                        <p><strong>Hostel:</strong> <span id="detailCustomerHostel"></span></p>
+                    </div>
+                    <div class="detail-group">
+                        <h4>Device Information</h4>
+                        <p><strong>Device:</strong> <span id="detailDevice"></span></p>
+                        <p><strong>Repair:</strong> <span id="detailRepair"></span></p>
+                        <p><strong>Issue:</strong> <span id="detailIssue"></span></p>
+                    </div>
+                </div>
+
+                <!-- Status Update Section -->
+                <div class="status-update-section">
+                    <h4>Update Repair Status</h4>
+                    <div class="status-buttons">
+                        <button class="btn btn-outline" onclick="updateOrderStatus('diagnosis_complete')">
+                            <i class="fas fa-search"></i> Diagnosis Complete
+                        </button>
+                        <button class="btn btn-outline" onclick="updateOrderStatus('repair_started')">
+                            <i class="fas fa-tools"></i> Start Repair
+                        </button>
+                        <button class="btn btn-outline" onclick="updateOrderStatus('repair_complete')">
+                            <i class="fas fa-check"></i> Repair Complete
+                        </button>
+                        <button class="btn btn-primary" onclick="updateOrderStatus('ready_pickup')">
+                            <i class="fas fa-box"></i> Ready for Pickup
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Progress Timeline -->
+                <div class="progress-timeline">
+                    <h4>Repair Progress</h4>
+                    <div id="progressTimeline">
+                        <!-- Timeline will be populated here -->
+                    </div>
+                </div>
+
+                <!-- Quick Actions -->
+                <div class="quick-actions">
+                    <h4>Quick Actions</h4>
+                    <div class="action-buttons">
+                        <button class="btn btn-secondary" onclick="contactCustomer()">
+                            <i class="fab fa-whatsapp"></i> Contact Customer
+                        </button>
+                        <button class="btn btn-secondary" onclick="addUpdateNote()">
+                            <i class="fas fa-plus"></i> Add Update
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/admin-dashboard.js"></script>
+    <style>
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+        .stat-card {
+            background: var(--gray-800);
+            padding: 25px;
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .stat-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+        .orders-table {
+            background: var(--gray-800);
+            border-radius: 15px;
+            overflow: hidden;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        th {
+            background: rgba(255, 255, 255, 0.05);
+            font-weight: 600;
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+        }
+        .modal-content {
+            background: var(--gray-800);
+            margin: 50px auto;
+            padding: 0;
+            border-radius: 20px;
+            max-width: 800px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        .modal-header {
+            padding: 20px 30px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .modal-body {
+            padding: 30px;
+        }
+        .status-buttons {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 10px;
+            margin: 20px 0;
+        }
+    </style>
+</body>
+</html>
