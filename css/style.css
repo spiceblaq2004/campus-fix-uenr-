@@ -309,18 +309,3 @@ section {
   color: var(--success);
   margin-left: 0.5rem;
 }
-
-/* Add responsive styles */
-@media (max-width: 768px) {
-  .pricing-grid {
-    grid-template-columns: 1fr;
-  }
-  
-  .hero-grid {
-    grid-template-columns: 1fr;
-  }
-  
-  .file-upload-area {
-    padding: 2rem 1rem;
-  }
-}
