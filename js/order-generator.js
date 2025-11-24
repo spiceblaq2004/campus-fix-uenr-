@@ -1,5 +1,5 @@
 // ================================
-// ENHANCED ORDER GENERATOR - FIXED VERSION
+// ENHANCED ORDER GENERATOR - FIXED VERSION WITH JSONBIN
 // ================================
 
 class OrderGenerator {
@@ -309,7 +309,20 @@ class OrderGenerator {
         // Try JSONBin backend first
         if (window.jsonbinBackend) {
             try {
-                const order = await window.jsonbinBackend.createOrder(formData);
+                // Convert form data to JSONBin format
+                const jsonBinData = {
+                    customer_name: formData.customerName,
+                    customer_phone: formData.customerPhone,
+                    customer_email: formData.customerEmail,
+                    customer_hostel: formData.customerHostel,
+                    device_brand: formData.deviceBrand,
+                    device_model: formData.deviceModel,
+                    repair_type: formData.repairType,
+                    urgency_level: formData.urgencyLevel,
+                    issue_description: formData.issueDescription
+                };
+                
+                const order = await window.jsonbinBackend.createOrder(jsonBinData);
                 this.saveOrderToLocalStorage(order);
                 return order;
             } catch (error) {
@@ -442,7 +455,7 @@ class OrderGenerator {
             const adminMessage = this.generateAdminMessage(order);
             
             // Create WhatsApp URLs
-            const customerUrl = `https://wa.me/${order.customerPhone.replace(/\D/g, '')}?text=${encodeURIComponent(customerMessage)}`;
+            const customerUrl = `https://wa.me/${order.customerPhone ? order.customerPhone.replace(/\D/g, '') : order.customer_phone.replace(/\D/g, '')}?text=${encodeURIComponent(customerMessage)}`;
             const adminUrl = `https://wa.me/233246912468?text=${encodeURIComponent(adminMessage)}`;
             
             // Send customer message immediately
@@ -466,19 +479,40 @@ class OrderGenerator {
 
     // Manual send methods for the buttons
     async sendCustomerMessage(orderCode) {
-        const savedOrders = JSON.parse(localStorage.getItem('campusFixOrders') || '{}');
-        const order = savedOrders[orderCode];
+        let order = null;
+        
+        // Try JSONBin first
+        if (window.jsonbinBackend) {
+            order = await window.jsonbinBackend.getOrder(orderCode);
+        }
+        
+        // Fallback to localStorage
+        if (!order) {
+            const savedOrders = JSON.parse(localStorage.getItem('campusFixOrders') || '{}');
+            order = savedOrders[orderCode];
+        }
         
         if (order) {
             const message = this.generateCustomerMessage(order);
-            const url = `https://wa.me/${order.customerPhone.replace(/\D/g, '')}?text=${encodeURIComponent(message)}`;
+            const phone = order.customerPhone || order.customer_phone;
+            const url = `https://wa.me/${phone.replace(/\D/g, '')}?text=${encodeURIComponent(message)}`;
             window.open(url, '_blank');
         }
     }
 
     async sendAdminMessage(orderCode) {
-        const savedOrders = JSON.parse(localStorage.getItem('campusFixOrders') || '{}');
-        const order = savedOrders[orderCode];
+        let order = null;
+        
+        // Try JSONBin first
+        if (window.jsonbinBackend) {
+            order = await window.jsonbinBackend.getOrder(orderCode);
+        }
+        
+        // Fallback to localStorage
+        if (!order) {
+            const savedOrders = JSON.parse(localStorage.getItem('campusFixOrders') || '{}');
+            order = savedOrders[orderCode];
+        }
         
         if (order) {
             const message = this.generateAdminMessage(order);
@@ -495,21 +529,28 @@ class OrderGenerator {
             customerMessage: customerMessage,
             adminMessage: adminMessage,
             sentAt: new Date().toISOString(),
-            customerPhone: order.customerPhone
+            customerPhone: order.customerPhone || order.customer_phone
         });
         
         localStorage.setItem('campusFixMessageLogs', JSON.stringify(messageLogs));
     }
 
     generateCustomerMessage(order) {
+        const customerName = order.customerName || order.customer_name;
+        const deviceBrand = order.deviceBrand || order.device_brand;
+        const deviceModel = order.deviceModel || order.device_model;
+        const repairType = order.repairType || order.repair_type;
+        const urgencyLevel = order.urgencyLevel || order.urgency_level;
+        const customerHostel = order.customerHostel || order.customer_hostel;
+
         return `✅ *CampusFix UENR - Order Confirmation*
 
 📦 *Order Code:* ${order.order_code}
-👤 *Customer:* ${order.customerName}
-📱 *Device:* ${order.deviceBrand} ${order.deviceModel}
-🔧 *Repair:* ${order.repairType}
-⚡ *Urgency:* ${order.urgencyLevel}
-🏠 *Hostel:* ${order.customerHostel}
+👤 *Customer:* ${customerName}
+📱 *Device:* ${deviceBrand} ${deviceModel}
+🔧 *Repair:* ${repairType}
+⚡ *Urgency:* ${urgencyLevel}
+🏠 *Hostel:* ${customerHostel}
 
 👨‍💼 *Repair Technician:* Abdul Latif Bright (Spice BlaQ)
 
@@ -536,18 +577,27 @@ https://campusfix-uenr.netlify.app/#tracker
     }
 
     generateAdminMessage(order) {
+        const customerName = order.customerName || order.customer_name;
+        const deviceBrand = order.deviceBrand || order.device_brand;
+        const deviceModel = order.deviceModel || order.device_model;
+        const repairType = order.repairType || order.repair_type;
+        const urgencyLevel = order.urgencyLevel || order.urgency_level;
+        const customerHostel = order.customerHostel || order.customer_hostel;
+        const customerPhone = order.customerPhone || order.customer_phone;
+        const issueDescription = order.issueDescription || order.issue_description;
+
         return `🆕 *NEW REPAIR ORDER - CampusFix*
 
 📦 *Order Code:* ${order.order_code}
-👤 *Customer:* ${order.customerName}
-📞 *Phone:* ${order.customerPhone}
-📱 *Device:* ${order.deviceBrand} ${order.deviceModel}
-🔧 *Repair:* ${order.repairType}
-⚡ *Urgency:* ${order.urgencyLevel}
-🏠 *Hostel:* ${order.customerHostel}
+👤 *Customer:* ${customerName}
+📞 *Phone:* ${customerPhone}
+📱 *Device:* ${deviceBrand} ${deviceModel}
+🔧 *Repair:* ${repairType}
+⚡ *Urgency:* ${urgencyLevel}
+🏠 *Hostel:* ${customerHostel}
 
 📝 *Issue Description:*
-${order.issueDescription}
+${issueDescription}
 
 ⏰ *Estimated Completion:* ${new Date(order.estimated_completion).toLocaleDateString('en-GB')}
 
@@ -556,7 +606,7 @@ ${order.issueDescription}
 • Schedule hostel pickup
 • Begin diagnosis process
 
-💬 *Contact Customer:* https://wa.me/${order.customerPhone.replace(/\D/g, '')}
+💬 *Contact Customer:* https://wa.me/${customerPhone.replace(/\D/g, '')}
 
 *– New order received! Time to work your magic Spice! 💪*`;
     }
