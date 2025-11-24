@@ -613,7 +613,45 @@
     transform: scale(1);
   }
 }
+/* Loading States */
+body.loading {
+    cursor: wait;
+}
 
+body.loading * {
+    pointer-events: none;
+}
+
+.loading-spinner {
+    display: none;
+}
+
+body.loading .loading-spinner {
+    display: block;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 9999;
+}
+
+/* Error States */
+.error-message {
+    animation: fadeInUp 0.3s ease;
+}
+
+.border-red-400 {
+    border-color: #EF4444 !important;
+}
+
+.text-red-400 {
+    color: #EF4444;
+}
+
+/* Success States */
+.success-animation {
+    animation: success-bounce 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
 /* Slide In Up Stagger */
 .slide-in-up-stagger > * {
   opacity: 0;
