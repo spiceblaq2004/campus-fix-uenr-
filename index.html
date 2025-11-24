@@ -10,12 +10,14 @@
   <link href="https://fonts.googleapis.com/css2?family=Clash+Display:wght@700;800&family=Satoshi:wght@400;500;700;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   
-  <!-- Our CSS -->
-  <link rel="stylesheet" href="style.css">
+  <!-- Our CSS Files -->
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/animations.css">
 </head>
 <body class="brand-pattern">
   <!-- Emergency Toggle -->
-  <button id="emergencyToggle" class="fixed top-4 right-4 z-50 bg-red-600 px-4 py-2 rounded-full text-sm hover:scale-110 transition shadow-lg flex items-center gap-2 z-50">
+  <button id="emergencyToggle" class="emergency-toggle">
     <span>🚨</span>
     <span>Emergency Mode</span>
   </button>
@@ -28,7 +30,7 @@
   </a>
 
   <!-- Navigation -->
-  <header class="glass fixed top-0 left-0 right-0 z-40 py-4">
+  <header class="header glass">
     <div class="container">
       <div class="logo">
         <div class="logo-icon">
@@ -71,68 +73,148 @@
 
   <!-- Hero Section -->
   <section id="home" class="hero">
-    <!-- Your existing hero section content goes here -->
-    <!-- I'll keep it brief for this example -->
     <div class="container">
-      <div class="hero-content">
-        <div class="repair-badge">
-          <i class="fas fa-bolt"></i>
-          <span>UENR's #1 Student-Run Repair Service</span>
-        </div>
-        
-        <h1 class="hero-title">
-          Phone Broken?<br>
-          <span class="brand-gradient">We'll Fix It</span><br>
-          Today.
-        </h1>
-        
-        <p class="hero-description">
-          Same-day phone repairs at UENR for up to <span class="highlight">70% less</span> than town prices. Free hostel pickup & delivery included.
-        </p>
-        
-        <div class="hero-buttons">
-          <a href="https://wa.me/233246912468" class="btn-primary pulse-glow">
-            <i class="fab fa-whatsapp"></i>
-            WhatsApp Now
-          </a>
-          <a href="tel:+233246912468" class="btn-secondary">
-            <i class="fas fa-phone"></i>
-            Call (024) 691-2468
-          </a>
-        </div>
-        
-        <div class="slots-container glass">
-          <div class="slots-header">
-            <span class="slots-text">Same-day slots available:</span>
-            <span id="slotsCount" class="slots-count">5</span>
+      <div class="hero-grid">
+        <div class="hero-content">
+          <div class="repair-badge">
+            <i class="fas fa-bolt"></i>
+            <span>UENR's #1 Student-Run Repair Service</span>
           </div>
-          <div class="slots-indicator">
-            <div id="slotsProgress" class="slots-progress"></div>
+          
+          <h1 class="hero-title">
+            Phone Broken?<br>
+            <span class="brand-gradient">We'll Fix It</span><br>
+            Today.
+          </h1>
+          
+          <p class="hero-description">
+            Same-day phone repairs at UENR for up to <span class="highlight">70% less</span> than town prices. Free hostel pickup & delivery included.
+          </p>
+          
+          <div class="hero-buttons">
+            <a href="https://wa.me/233246912468" class="btn-primary pulse-glow">
+              <i class="fab fa-whatsapp"></i>
+              WhatsApp Now
+            </a>
+            <a href="tel:+233246912468" class="btn-secondary">
+              <i class="fas fa-phone"></i>
+              Call (024) 691-2468
+            </a>
           </div>
-        </div>
-      </div>
-      
-      <div class="hero-visual">
-        <!-- Your phone mockup code -->
-        <div class="phone-mockup floating">
-          <div class="phone-screen">
-            <div class="phone-icon">
-              <i class="fas fa-tools"></i>
+          
+          <div class="slots-container glass">
+            <div class="slots-header">
+              <span class="slots-text">Same-day slots available:</span>
+              <span id="slotsCount" class="slots-count">5</span>
             </div>
-            <h3>CampusFix UENR</h3>
-            <p>Your phone repair solution</p>
-            <!-- Rest of phone content -->
+            <div class="slots-indicator">
+              <div id="slotsProgress" class="slots-progress"></div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="hero-visual">
+          <div class="phone-mockup floating">
+            <div class="phone-screen">
+              <div class="phone-icon">
+                <i class="fas fa-tools"></i>
+              </div>
+              <h3>CampusFix UENR</h3>
+              <p>Your phone repair solution</p>
+              <div class="phone-features">
+                <div class="phone-feature">
+                  <div class="feature-icon">
+                    <i class="fas fa-mobile-alt"></i>
+                  </div>
+                  <div>
+                    <p class="feature-title">Screen Repair</p>
+                    <p class="feature-price">From GH₵180</p>
+                  </div>
+                </div>
+                <div class="phone-feature">
+                  <div class="feature-icon">
+                    <i class="fas fa-battery-half"></i>
+                  </div>
+                  <div>
+                    <p class="feature-title">Battery Replacement</p>
+                    <p class="feature-price">From GH₵80</p>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- Add your other sections here with simplified structure -->
-  <!-- Services, Pricing, Tracker, etc. -->
+  <!-- Stats Section -->
+  <section class="stats-section">
+    <div class="container">
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-number">500+</div>
+          <p class="stat-label">Phones Repaired</p>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number">98%</div>
+          <p class="stat-label">Success Rate</p>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number">4.9★</div>
+          <p class="stat-label">Student Rating</p>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number">2-4</div>
+          <p class="stat-label">Hours Average Repair</p>
+        </div>
+      </div>
+    </div>
+  </section>
 
-  <!-- Load JavaScript -->
-  <script src="script.js"></script>
-  <script src="forms-handler.js"></script>
+  <!-- Services Section -->
+  <section id="services" class="services-section">
+    <div class="container">
+      <h2 class="section-title">Our Repair Services</h2>
+      <p class="section-subtitle">Fast, affordable, and reliable phone repairs for all UENR students</p>
+      
+      <div class="services-grid">
+        <div class="service-card glass">
+          <div class="service-icon">
+            <i class="fas fa-mobile-alt"></i>
+          </div>
+          <h3>Screen Replacement</h3>
+          <p>Cracked or broken displays fixed with high-quality replacements</p>
+          <div class="service-price">GH₵180 - GH₵420</div>
+        </div>
+        
+        <div class="service-card glass">
+          <div class="service-icon">
+            <i class="fas fa-battery-half"></i>
+          </div>
+          <h3>Battery Replacement</h3>
+          <p>Extend your phone's life with new, long-lasting batteries</p>
+          <div class="service-price">GH₵80 - GH₵180</div>
+        </div>
+        
+        <div class="service-card glass">
+          <div class="service-icon">
+            <i class="fas fa-plug"></i>
+          </div>
+          <h3>Charging Port</h3>
+          <p>Fix charging issues and restore fast charging capabilities</p>
+          <div class="service-price">GH₵50 - GH₵150</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Include other sections: AI Scanner, Pricing, Order Generation, Tracker, Testimonials, Contact -->
+
+  <!-- JavaScript Files -->
+  <script src="js/main.js"></script>
+  <script src="js/order-generator.js"></script>
+  <script src="js/order-tracker.js"></script>
+  <script src="js/quote-calculator.js"></script>
 </body>
 </html>
