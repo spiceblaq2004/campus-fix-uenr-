@@ -4,7 +4,7 @@
 
 // 🔧 CONFIGURATION
 const JSONBIN_BIN_ID = '69249d53ae596e708f6e3f11'; // From Step 3
-const JSONBIN_API_KEY = '$2a$10$d2C7GXzpuliGQoxwwRWnFuHXIIxOGyzRT6vNJkhHRtSh2WTO8.Toq'; // From Step 3
+const JSONBIN_API_KEY = '$2a$10$o7tsthfWwEV7NcxhtUKFJuKGGFLsIMNFkYvLrnTWijDLRLgtnryG2'; // From Step 3
 
 class JsonBinBackend {
     constructor() {
