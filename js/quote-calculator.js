@@ -1,91 +1,181 @@
 // ================================
-// QUOTE CALCULATOR FUNCTIONALITY
+// ENHANCED QUOTE CALCULATOR
 // ================================
 
 class QuoteCalculator {
     constructor() {
         this.priceMatrix = {
             'iPhone': {
-                'Screen': { min: 300, max: 450 },
-                'Battery': { min: 120, max: 180 },
-                'Charging': { min: 80, max: 150 },
-                'Water': { min: 150, max: 500 },
-                'Other': { min: 100, max: 300 }
+                'Screen': { min: 300, max: 450, time: '3-5 hours' },
+                'Battery': { min: 120, max: 180, time: '1-2 hours' },
+                'Charging': { min: 80, max: 150, time: '2-3 hours' },
+                'Water': { min: 150, max: 500, time: '1-2 days' },
+                'Camera': { min: 120, max: 300, time: '2-4 hours' },
+                'Software': { min: 40, max: 120, time: '1-2 hours' }
             },
             'Samsung': {
-                'Screen': { min: 250, max: 400 },
-                'Battery': { min: 100, max: 160 },
-                'Charging': { min: 70, max: 130 },
-                'Water': { min: 120, max: 450 },
-                'Other': { min: 80, max: 250 }
-            },
-            'OnePlus': {
-                'Screen': { min: 280, max: 420 },
-                'Battery': { min: 110, max: 170 },
-                'Charging': { min: 75, max: 140 },
-                'Water': { min: 130, max: 480 },
-                'Other': { min: 90, max: 270 }
-            },
-            'Xiaomi': {
-                'Screen': { min: 180, max: 350 },
-                'Battery': { min: 80, max: 140 },
-                'Charging': { min: 50, max: 120 },
-                'Water': { min: 100, max: 400 },
-                'Other': { min: 70, max: 220 }
+                'Screen': { min: 250, max: 400, time: '3-5 hours' },
+                'Battery': { min: 100, max: 160, time: '1-2 hours' },
+                'Charging': { min: 70, max: 130, time: '2-3 hours' },
+                'Water': { min: 120, max: 450, time: '1-2 days' },
+                'Camera': { min: 100, max: 280, time: '2-4 hours' },
+                'Software': { min: 40, max: 100, time: '1-2 hours' }
             },
             'Other': {
-                'Screen': { min: 200, max: 380 },
-                'Battery': { min: 90, max: 160 },
-                'Charging': { min: 60, max: 130 },
-                'Water': { min: 110, max: 420 },
-                'Other': { min: 80, max: 240 }
+                'Screen': { min: 200, max: 380, time: '3-5 hours' },
+                'Battery': { min: 80, max: 150, time: '1-2 hours' },
+                'Charging': { min: 60, max: 120, time: '2-3 hours' },
+                'Water': { min: 100, max: 400, time: '1-2 days' },
+                'Camera': { min: 90, max: 250, time: '2-4 hours' },
+                'Software': { min: 30, max: 90, time: '1-2 hours' }
             }
         };
         
         this.initializeEventListeners();
+        this.setupRealTimeUpdates();
     }
 
     initializeEventListeners() {
-        const quoteForm = document.getElementById('quoteForm');
         const phoneBrand = document.getElementById('phoneBrand');
         const repairType = document.getElementById('repairType');
 
-        phoneBrand.addEventListener('change', () => this.calculateQuote());
-        repairType.addEventListener('change', () => this.calculateQuote());
+        if (phoneBrand && repairType) {
+            phoneBrand.addEventListener('change', () => this.updateQuote());
+            repairType.addEventListener('change', () => this.updateQuote());
+        }
 
-        quoteForm.addEventListener('submit', (e) => this.handleFormSubmit(e));
+        const quoteForm = document.getElementById('quoteForm');
+        if (quoteForm) {
+            quoteForm.addEventListener('submit', (e) => this.handleQuoteSubmit(e));
+        }
     }
 
-    calculateQuote() {
-        const phoneBrand = document.getElementById('phoneBrand').value;
-        const repairType = document.getElementById('repairType').value;
+    setupRealTimeUpdates() {
+        // Update quote when either field changes
+        const inputs = document.querySelectorAll('#phoneBrand, #repairType');
+        inputs.forEach(input => {
+            input.addEventListener('change', () => {
+                this.updateQuote();
+            });
+        });
+    }
+
+    updateQuote() {
+        const phoneBrand = document.getElementById('phoneBrand')?.value;
+        const repairType = document.getElementById('repairType')?.value;
         const quoteResult = document.getElementById('quoteResult');
         const estimatedCost = document.getElementById('estimatedCost');
-        
-        if (phoneBrand && repairType) {
+
+        if (phoneBrand && repairType && this.priceMatrix[phoneBrand]?.[repairType]) {
             const price = this.priceMatrix[phoneBrand][repairType];
             estimatedCost.textContent = `GH₵${price.min} - GH₵${price.max}`;
-            quoteResult.classList.remove('hidden');
-        } else {
+            
+            if (quoteResult) {
+                quoteResult.classList.remove('hidden');
+                this.animatePriceUpdate();
+            }
+        } else if (quoteResult) {
             quoteResult.classList.add('hidden');
         }
     }
 
-    handleFormSubmit(e) {
+    animatePriceUpdate() {
+        const costElement = document.getElementById('estimatedCost');
+        if (costElement) {
+            costElement.classList.add('pulse');
+            setTimeout(() => {
+                costElement.classList.remove('pulse');
+            }, 600);
+        }
+    }
+
+    handleQuoteSubmit(e) {
         e.preventDefault();
         
-        const phoneBrand = document.getElementById('phoneBrand').value;
-        const repairType = document.getElementById('repairType').value;
+        const phoneBrand = document.getElementById('phoneBrand')?.value;
+        const repairType = document.getElementById('repairType')?.value;
         
         if (!phoneBrand || !repairType) {
-            alert('Please select both phone brand and repair type');
+            this.showNotification('Please select both phone brand and repair type', 'error');
             return;
         }
         
-        const price = this.priceMatrix[phoneBrand][repairType];
-        const message = `Hi CampusFix! I need a quote for my ${phoneBrand} with ${repairType} issue. Estimated cost: GH₵${price.min}-GH₵${price.max}`;
+        const price = this.priceMatrix[phoneBrand]?.[repairType];
+        if (!price) {
+            this.showNotification('Invalid selection. Please try again.', 'error');
+            return;
+        }
+
+        const message = this.generateWhatsAppMessage(phoneBrand, repairType, price);
+        const whatsappUrl = `https://wa.me/233246912468?text=${encodeURIComponent(message)}`;
         
-        window.open(`https://wa.me/233246912468?text=${encodeURIComponent(message)}`, '_blank');
+        // Open WhatsApp in new tab
+        window.open(whatsappUrl, '_blank');
+        
+        // Track the quote request
+        this.trackQuoteRequest(phoneBrand, repairType, price);
+    }
+
+    generateWhatsAppMessage(brand, repair, price) {
+        return `📱 *Phone Repair Quote Request - CampusFix UENR*
+
+🔧 *Repair Needed:* ${repair}
+📱 *Device Brand:* ${brand}
+💰 *Estimated Cost:* GH₵${price.min} - GH₵${price.max}
+⏱️ *Estimated Time:* ${price.time}
+
+💬 *Please provide:*
+• Your specific device model
+• More details about the issue
+• Your hostel and room number
+
+📍 *Service Includes:*
+✓ Free hostel pickup & delivery
+✓ 6 months warranty
+✓ Quality parts
+✓ Professional service
+
+🎯 *Next Steps:*
+1. We'll confirm the exact price
+2. Schedule free pickup
+3. Repair your device
+4. Quality check & delivery
+
+*– CampusFix UENR Repair Team*`;
+    }
+
+    trackQuoteRequest(brand, repair, price) {
+        // Here you would typically send to analytics
+        console.log('Quote requested:', { brand, repair, price });
+        
+        // You could also save to local storage for analytics
+        const quoteHistory = JSON.parse(localStorage.getItem('quoteHistory') || '[]');
+        quoteHistory.push({
+            brand,
+            repair,
+            price,
+            timestamp: new Date().toISOString()
+        });
+        localStorage.setItem('quoteHistory', JSON.stringify(quoteHistory));
+    }
+
+    showNotification(message, type = 'info') {
+        if (window.campusFixApp && window.campusFixApp.showNotification) {
+            window.campusFixApp.showNotification(message, type);
+        } else {
+            alert(message);
+        }
+    }
+
+    // Utility method to get popular repairs
+    getPopularRepairs() {
+        return [
+            { brand: 'iPhone', repair: 'Screen', price: 'GH₵300-450' },
+            { brand: 'Samsung', repair: 'Screen', price: 'GH₵250-400' },
+            { brand: 'iPhone', repair: 'Battery', price: 'GH₵120-180' },
+            { brand: 'All', repair: 'Charging Port', price: 'GH₵60-150' },
+            { brand: 'All', repair: 'Software', price: 'GH₵30-120' }
+        ];
     }
 }
 
