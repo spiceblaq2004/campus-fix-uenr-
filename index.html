@@ -5,202 +5,177 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   
   <!-- Enhanced Meta Tags -->
-  <title>Campus Fix UENR → Student-Run Phone Repair | 70% Cheaper | Same-Day</title>
-  <meta name="description" content="UENR's trusted student-run phone repair service. 70% cheaper than town. Same-day repairs with free hostel pickup. Screen, battery & charging port fixes."/>
+  <title>CampusFix UENR → Premium Phone Repair | 70% Cheaper | Same-Day Service</title>
+  <meta name="description" content="UENR's premium student-run phone repair. 70% cheaper than town. Same-day repairs with free hostel pickup. Screen, battery & charging port fixes."/>
   
   <!-- PWA & Mobile Optimization -->
-  <meta name="theme-color" content="#00D8A7">
+  <meta name="theme-color" content="#6366f1">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="CampusFix UENR">
-  <meta name="format-detection" content="telephone=no">
   
-  <!-- Open Graph / Social Media -->
-  <meta property="og:title" content="CampusFix UENR - Student-Run Phone Repair">
-  <meta property="og:description" content="70% cheaper phone repairs at UENR. Same-day service with free hostel pickup.">
-  <meta property="og:type" content="website">
-  <meta property="og:url" content="https://campusfix-uenr.com">
-  <meta property="og:image" content="https://campusfix-uenr.com/images/og-image.jpg">
-  
-  <!-- Twitter Card -->
-  <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="CampusFix UENR - Phone Repair">
-  <meta name="twitter:description" content="70% cheaper phone repairs at UENR. Same-day service with free hostel pickup.">
-  
-  <!-- Fonts & Icons -->
-  <link href="https://fonts.googleapis.com/css2?family=Clash+Display:wght@700;800&family=Satoshi:wght@400;500;700;900&display=swap" rel="stylesheet">
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   
-  <!-- Stylesheets -->
+  <!-- Styles -->
   <link rel="stylesheet" href="css/style.css">
   <link rel="stylesheet" href="css/components.css">
   <link rel="stylesheet" href="css/animations.css">
 </head>
-<body class="brand-pattern">
-  <!-- Global Loading Spinner -->
-  <div id="globalLoadingSpinner" class="loading-spinner hidden">
-    <div class="spinner-container glass p-8 rounded-2xl text-center">
-      <div class="loading-icon text-4xl text-primary mb-4">
-        <i class="fas fa-tools fa-spin"></i>
+<body>
+  <!-- Loading Spinner -->
+  <div id="globalLoading" class="loading-spinner">
+    <div class="spinner-content">
+      <div class="spinner-icon">
+        <i class="fas fa-tools"></i>
       </div>
-      <p class="text-light text-lg font-semibold">Processing...</p>
-      <p class="text-gray text-sm mt-2">Please wait</p>
+      <p>CampusFix UENR</p>
     </div>
   </div>
 
-  <!-- Floating WhatsApp -->
-  <a href="https://wa.me/233246912468?text=Hi%20CampusFix%20UENR!%20I%20need%20phone%20repair%20service%20📱" 
-     class="whatsapp-float pulse-glow" id="whatsappFloat">
-    <i class="fab fa-whatsapp"></i>
-    WhatsApp Us
-  </a>
-
-  <!-- Emergency Toggle -->
-  <button class="emergency-toggle pulse-glow" id="emergencyToggle">
-    <i class="fas fa-bolt"></i>
-    Emergency Repair
-  </button>
-
-  <!-- Navigation -->
-  <header class="header glass">
-    <div class="container header-container">
-      <div class="logo">
+  <!-- Navigation Bar -->
+  <nav class="navbar">
+    <div class="nav-container">
+      <div class="nav-logo">
         <div class="logo-icon">
           <i class="fas fa-tools"></i>
         </div>
-        <span>Campus<span class="brand-gradient">Fix</span></span>
+        <span class="logo-text">Campus<span>Fix</span></span>
       </div>
-      
-      <nav class="nav-desktop">
-        <a href="#home" class="nav-link">Home</a>
-        <a href="#services" class="nav-link">Services</a>
-        <a href="#pricing" class="nav-link">Pricing</a>
-        <a href="#tracker" class="nav-link">Track Order</a>
-        <a href="#generate" class="nav-link">Get Order Code</a>
-        <a href="#testimonials" class="nav-link">Reviews</a>
-        <a href="#contact" class="btn-primary">Get Quote</a>
-      </nav>
-      
-      <button id="mobileMenuButton" class="mobile-menu-button">
-        <i class="fas fa-bars"></i>
-      </button>
-    </div>
-  </header>
 
-  <!-- Mobile Menu -->
-  <div id="mobileMenu" class="mobile-menu">
-    <button id="closeMobileMenu" class="close-mobile-menu">
-      <i class="fas fa-times"></i>
-    </button>
-    <nav class="mobile-nav">
-      <a href="#home" class="nav-link">Home</a>
-      <a href="#services" class="nav-link">Services</a>
-      <a href="#pricing" class="nav-link">Pricing</a>
-      <a href="#tracker" class="nav-link">Track Order</a>
-      <a href="#generate" class="nav-link">Get Order Code</a>
-      <a href="#testimonials" class="nav-link">Reviews</a>
-      <a href="#contact" class="btn-primary">Get Quote</a>
-    </nav>
-  </div>
+      <div class="nav-menu" id="navMenu">
+        <a href="#home" class="nav-link active">
+          <i class="fas fa-home"></i>
+          <span>Home</span>
+        </a>
+        <a href="#services" class="nav-link">
+          <i class="fas fa-tools"></i>
+          <span>Services</span>
+        </a>
+        <a href="#pricing" class="nav-link">
+          <i class="fas fa-tag"></i>
+          <span>Pricing</span>
+        </a>
+        <a href="#tracker" class="nav-link">
+          <i class="fas fa-search"></i>
+          <span>Track Repair</span>
+        </a>
+        <a href="#generate" class="nav-link">
+          <i class="fas fa-qrcode"></i>
+          <span>Get Code</span>
+        </a>
+        <a href="#testimonials" class="nav-link">
+          <i class="fas fa-star"></i>
+          <span>Reviews</span>
+        </a>
+        <a href="https://wa.me/233246912468" class="nav-cta">
+          <i class="fab fa-whatsapp"></i>
+          <span>Get Quote</span>
+        </a>
+      </div>
+
+      <div class="nav-toggle" id="navToggle">
+        <span></span>
+        <span></span>
+        <span></span>
+      </div>
+    </div>
+  </nav>
 
   <!-- Hero Section -->
   <section id="home" class="hero">
-    <div class="container hero-container">
-      <div class="hero-content stagger">
-        <div class="repair-badge">
+    <div class="hero-background">
+      <div class="hero-bg-shape shape-1"></div>
+      <div class="hero-bg-shape shape-2"></div>
+      <div class="hero-bg-shape shape-3"></div>
+    </div>
+
+    <div class="container">
+      <div class="hero-content">
+        <div class="hero-badge">
           <i class="fas fa-bolt"></i>
-          <span>UENR's #1 Student-Run Repair Service</span>
+          <span>UENR's #1 Premium Repair Service</span>
         </div>
-        
+
         <h1 class="hero-title">
-          Phone Broken?<br>
-          <span class="brand-gradient">We'll Fix It</span><br>
-          Today.
+          Phone <span class="text-gradient">Repairs</span><br>
+          Made <span class="text-accent">Simple</span> &<br>
+          <span class="text-primary">Affordable</span>
         </h1>
-        
+
         <p class="hero-description">
-          Same-day phone repairs at UENR for up to <span class="highlight">70% less</span> than town prices. Free hostel pickup & delivery included.
+          Professional phone repairs at UENR for <strong>70% less</strong> than town prices. 
+          Same-day service with free hostel pickup & delivery.
         </p>
-        
-        <div class="hero-buttons">
-          <a href="https://wa.me/233246912468" class="btn-primary pulse-glow" id="heroWhatsApp">
+
+        <div class="hero-stats">
+          <div class="stat">
+            <div class="stat-number">500+</div>
+            <div class="stat-label">Phones Fixed</div>
+          </div>
+          <div class="stat">
+            <div class="stat-number">4.9★</div>
+            <div class="stat-label">Rating</div>
+          </div>
+          <div class="stat">
+            <div class="stat-number">2-4</div>
+            <div class="stat-label">Hours Repair</div>
+          </div>
+        </div>
+
+        <div class="hero-actions">
+          <a href="https://wa.me/233246912468" class="btn btn-primary btn-large">
             <i class="fab fa-whatsapp"></i>
             WhatsApp Now
           </a>
-          <a href="tel:+233246912468" class="btn-secondary" id="heroCall">
+          <a href="tel:+233246912468" class="btn btn-secondary btn-large">
             <i class="fas fa-phone"></i>
             Call (024) 691-2468
           </a>
         </div>
-        
-        <div class="slots-card glass">
-          <div class="slots-header">
-            <span class="slots-label">Same-day slots available:</span>
-            <span id="slotsCount" class="slots-count">5</span>
+
+        <div class="hero-features">
+          <div class="feature">
+            <i class="fas fa-shield-alt"></i>
+            <span>6 Months Warranty</span>
           </div>
-          <div class="slots-indicator">
-            <div id="slotsProgress" class="slots-progress"></div>
+          <div class="feature">
+            <i class="fas fa-clock"></i>
+            <span>Same-Day Service</span>
+          </div>
+          <div class="feature">
+            <i class="fas fa-home"></i>
+            <span>Free Hostel Pickup</span>
           </div>
         </div>
       </div>
-      
+
       <div class="hero-visual">
-        <div class="phone-mockup floating">
+        <div class="phone-mockup">
           <div class="phone-screen">
-            <div class="phone-icon">
+            <div class="app-icon">
               <i class="fas fa-tools"></i>
             </div>
-            <h3>CampusFix UENR</h3>
-            <p>Your phone repair solution</p>
-            <div class="phone-features">
-              <div class="phone-feature">
-                <div class="feature-icon">
-                  <i class="fas fa-mobile-alt"></i>
-                </div>
+            <h3>CampusFix Pro</h3>
+            <p>Your Repair Assistant</p>
+            <div class="app-features">
+              <div class="app-feature">
+                <i class="fas fa-mobile-alt"></i>
                 <div>
-                  <p class="feature-title">Screen Repair</p>
-                  <p class="feature-price">From GH₵180</p>
+                  <strong>Screen Repair</strong>
+                  <span>From GH₵180</span>
                 </div>
               </div>
-              <div class="phone-feature">
-                <div class="feature-icon">
-                  <i class="fas fa-battery-half"></i>
-                </div>
+              <div class="app-feature">
+                <i class="fas fa-battery-half"></i>
                 <div>
-                  <p class="feature-title">Battery Replacement</p>
-                  <p class="feature-price">From GH₵80</p>
+                  <strong>Battery</strong>
+                  <span>From GH₵80</span>
                 </div>
               </div>
             </div>
           </div>
-        </div>
-        
-        <!-- Floating elements -->
-        <div class="floating-element floating-element-1"></div>
-        <div class="floating-element floating-element-2"></div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Stats Section -->
-  <section class="stats">
-    <div class="container">
-      <div class="stats-grid">
-        <div class="stat-card">
-          <div class="stat-number">500+</div>
-          <p class="stat-label">Phones Repaired</p>
-        </div>
-        <div class="stat-card">
-          <div class="stat-number">98%</div>
-          <p class="stat-label">Success Rate</p>
-        </div>
-        <div class="stat-card">
-          <div class="stat-number">4.9★</div>
-          <p class="stat-label">Student Rating</p>
-        </div>
-        <div class="stat-card">
-          <div class="stat-number">2-4</div>
-          <p class="stat-label">Hours Average Repair</p>
         </div>
       </div>
     </div>
@@ -209,204 +184,152 @@
   <!-- Services Section -->
   <section id="services" class="services">
     <div class="container">
-      <h2 class="section-title">Our Repair Services</h2>
-      <p class="section-description">Fast, affordable, and reliable phone repairs for all UENR students</p>
-      
+      <div class="section-header">
+        <h2 class="section-title">Our Premium Services</h2>
+        <p class="section-subtitle">Professional repairs with student-friendly pricing</p>
+      </div>
+
       <div class="services-grid">
-        <div class="service-card glass">
+        <div class="service-card">
           <div class="service-icon">
             <i class="fas fa-mobile-alt"></i>
           </div>
           <h3>Screen Replacement</h3>
-          <p>Cracked or broken displays fixed with high-quality replacements and warranty</p>
-          <div class="service-price">GH₵180 - GH₵420</div>
+          <p>High-quality screen replacements with perfect touch sensitivity</p>
+          <div class="service-price">GH₵180 - GH₵450</div>
           <ul class="service-features">
             <li><i class="fas fa-check"></i> Original quality displays</li>
-            <li><i class="fas fa-check"></i> Touch functionality guaranteed</li>
             <li><i class="fas fa-check"></i> 6 months warranty</li>
+            <li><i class="fas fa-check"></i> Touch guaranteed</li>
           </ul>
+          <button class="btn btn-outline">Get Quote</button>
         </div>
-        
-        <div class="service-card glass">
+
+        <div class="service-card featured">
+          <div class="service-badge">Most Popular</div>
           <div class="service-icon">
-            <i class="fas fa-battery-half"></i>
+            <i class="fas fa-battery-full"></i>
           </div>
           <h3>Battery Replacement</h3>
-          <p>Extend your phone's life with new, long-lasting batteries</p>
+          <p>Extend your phone's life with long-lasting batteries</p>
           <div class="service-price">GH₵80 - GH₵180</div>
           <ul class="service-features">
-            <li><i class="fas fa-check"></i> Improved battery life</li>
-            <li><i class="fas fa-check"></i> Fast charging support</li>
             <li><i class="fas fa-check"></i> 1 year warranty</li>
+            <li><i class="fas fa-check"></i> Fast charging</li>
+            <li><i class="fas fa-check"></i> Improved battery life</li>
           </ul>
+          <button class="btn btn-primary">Get Quote</button>
         </div>
-        
-        <div class="service-card glass">
+
+        <div class="service-card">
           <div class="service-icon">
             <i class="fas fa-plug"></i>
           </div>
           <h3>Charging Port</h3>
-          <p>Fix charging issues and restore fast charging capabilities</p>
+          <p>Fix charging issues and restore fast charging</p>
           <div class="service-price">GH₵50 - GH₵150</div>
           <ul class="service-features">
             <li><i class="fas fa-check"></i> Fast charging restored</li>
             <li><i class="fas fa-check"></i> Data transfer fixed</li>
             <li><i class="fas fa-check"></i> 6 months warranty</li>
           </ul>
+          <button class="btn btn-outline">Get Quote</button>
         </div>
 
-        <div class="service-card glass">
+        <div class="service-card">
           <div class="service-icon">
             <i class="fas fa-tint"></i>
           </div>
           <h3>Water Damage</h3>
-          <p>Professional water damage repair and component restoration</p>
+          <p>Professional water damage repair and restoration</p>
           <div class="service-price">GH₵100 - GH₵500</div>
           <ul class="service-features">
             <li><i class="fas fa-check"></i> Deep cleaning</li>
             <li><i class="fas fa-check"></i> Corrosion removal</li>
             <li><i class="fas fa-check"></i> Component testing</li>
           </ul>
+          <button class="btn btn-outline">Get Quote</button>
         </div>
 
-        <div class="service-card glass">
+        <div class="service-card">
           <div class="service-icon">
             <i class="fas fa-camera"></i>
           </div>
           <h3>Camera Repair</h3>
-          <p>Fix blurry, black, or damaged cameras on all phone models</p>
+          <p>Fix blurry, black, or damaged cameras</p>
           <div class="service-price">GH₵120 - GH₵300</div>
           <ul class="service-features">
             <li><i class="fas fa-check"></i> Front & back cameras</li>
             <li><i class="fas fa-check"></i> Focus issues fixed</li>
             <li><i class="fas fa-check"></i> 6 months warranty</li>
           </ul>
+          <button class="btn btn-outline">Get Quote</button>
         </div>
 
-        <div class="service-card glass">
+        <div class="service-card">
           <div class="service-icon">
             <i class="fas fa-microchip"></i>
           </div>
           <h3>Software Issues</h3>
-          <p>Fix software problems, updates, and performance issues</p>
+          <p>Fix software problems and performance issues</p>
           <div class="service-price">GH₵40 - GH₵120</div>
           <ul class="service-features">
             <li><i class="fas fa-check"></i> OS updates</li>
             <li><i class="fas fa-check"></i> Performance optimization</li>
             <li><i class="fas fa-check"></i> Data backup included</li>
           </ul>
+          <button class="btn btn-outline">Get Quote</button>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- Why Choose Us Section -->
-  <section class="why-choose-us">
+  <!-- Process Section -->
+  <section class="process">
     <div class="container">
-      <h2 class="section-title">Why Choose CampusFix?</h2>
-      <p class="section-description">We're not just repair technicians - we're your fellow students who understand your needs</p>
-      
-      <div class="features-grid">
-        <div class="feature-item glass">
-          <div class="feature-icon">
-            <i class="fas fa-money-bill-wave"></i>
-          </div>
-          <h3>70% Cheaper</h3>
-          <p>Save significantly compared to repair shops in town. Student-friendly pricing always.</p>
-        </div>
-        
-        <div class="feature-item glass">
-          <div class="feature-icon">
-            <i class="fas fa-clock"></i>
-          </div>
-          <h3>Same-Day Service</h3>
-          <p>Most repairs completed within 2-4 hours. Get your phone back the same day.</p>
-        </div>
-        
-        <div class="feature-item glass">
-          <div class="feature-icon">
-            <i class="fas fa-home"></i>
-          </div>
-          <h3>Free Hostel Pickup</h3>
-          <p>We pick up and deliver your phone right to your hostel room. No need to go anywhere.</p>
-        </div>
-        
-        <div class="feature-item glass">
-          <div class="feature-icon">
-            <i class="fas fa-shield-alt"></i>
-          </div>
-          <h3>Warranty Included</h3>
-          <p>All repairs come with warranty. We stand behind our work and your satisfaction.</p>
-        </div>
-        
-        <div class="feature-item glass">
-          <div class="feature-icon">
-            <i class="fas fa-users"></i>
-          </div>
-          <h3>Student-Run</h3>
-          <p>We understand student budgets and schedules. Flexible payment options available.</p>
-        </div>
-        
-        <div class="feature-item glass">
-          <div class="feature-icon">
-            <i class="fas fa-tools"></i>
-          </div>
-          <h3>Quality Parts</h3>
-          <p>We use high-quality, tested parts that last. No cheap imitations that break quickly.</p>
-        </div>
+      <div class="section-header">
+        <h2 class="section-title">How It Works</h2>
+        <p class="section-subtitle">Simple, fast, and hassle-free repair process</p>
       </div>
-    </div>
-  </section>
 
-  <!-- Repair Process Section -->
-  <section class="repair-process">
-    <div class="container">
-      <h2 class="section-title">How It Works</h2>
-      <p class="section-description">Getting your phone fixed is simple and hassle-free</p>
-      
       <div class="process-steps">
         <div class="process-step">
-          <div class="step-number">1</div>
+          <div class="step-number">01</div>
           <div class="step-content">
             <h3>Contact Us</h3>
             <p>Message us on WhatsApp or call to describe your phone issue</p>
           </div>
         </div>
-        
         <div class="process-step">
-          <div class="step-number">2</div>
+          <div class="step-number">02</div>
           <div class="step-content">
             <h3>Get Quote</h3>
             <p>We provide instant pricing and estimated repair time</p>
           </div>
         </div>
-        
         <div class="process-step">
-          <div class="step-number">3</div>
+          <div class="step-number">03</div>
           <div class="step-content">
             <h3>Free Pickup</h3>
             <p>We collect your phone from your hostel at your convenience</p>
           </div>
         </div>
-        
         <div class="process-step">
-          <div class="step-number">4</div>
+          <div class="step-number">04</div>
           <div class="step-content">
             <h3>Fast Repair</h3>
             <p>Our technicians fix your phone using quality parts</p>
           </div>
         </div>
-        
         <div class="process-step">
-          <div class="step-number">5</div>
+          <div class="step-number">05</div>
           <div class="step-content">
             <h3>Quality Check</h3>
             <p>We thoroughly test your phone before delivery</p>
           </div>
         </div>
-        
         <div class="process-step">
-          <div class="step-number">6</div>
+          <div class="step-number">06</div>
           <div class="step-content">
             <h3>Free Delivery</h3>
             <p>We return your fully functional phone to your hostel</p>
@@ -416,306 +339,104 @@
     </div>
   </section>
 
-  <!-- Pricing Section -->
-  <section id="pricing" class="pricing">
+  <!-- Order Generation Section -->
+  <section id="generate" class="order-section">
     <div class="container">
-      <h2 class="section-title">Get a Quote</h2>
-      <p class="section-description">Quick and transparent pricing for all UENR students</p>
-      
-      <div class="pricing-grid">
-        <div class="pricing-form-container">
-          <div class="quote-form glass">
-            <h3>Quick Quote Calculator</h3>
-            <form id="quoteForm" class="quote-form-content">
+      <div class="section-header">
+        <h2 class="section-title">Create Repair Order</h2>
+        <p class="section-subtitle">Generate your unique order code in seconds</p>
+      </div>
+
+      <div class="order-container">
+        <div class="order-form-container">
+          <div class="form-card">
+            <h3>Order Details</h3>
+            <form id="orderForm" class="order-form">
+              <div class="form-grid">
+                <div class="form-group">
+                  <label>Full Name *</label>
+                  <input type="text" id="customerName" placeholder="Enter your full name" required>
+                </div>
+                <div class="form-group">
+                  <label>Phone Number *</label>
+                  <input type="tel" id="customerPhone" placeholder="0246912468" required>
+                </div>
+                <div class="form-group">
+                  <label>Email Address</label>
+                  <input type="email" id="customerEmail" placeholder="your.email@uenr.edu.gh">
+                </div>
+                <div class="form-group">
+                  <label>Hostel & Room *</label>
+                  <input type="text" id="customerHostel" placeholder="Republic Hall, Room 205" required>
+                </div>
+                <div class="form-group">
+                  <label>Device Brand *</label>
+                  <select id="deviceBrand" required>
+                    <option value="">Select brand</option>
+                    <option value="iPhone">iPhone</option>
+                    <option value="Samsung">Samsung</option>
+                    <option value="Other">Other</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label>Device Model *</label>
+                  <input type="text" id="deviceModel" placeholder="iPhone 13 Pro" required>
+                </div>
+                <div class="form-group">
+                  <label>Repair Type *</label>
+                  <select id="repairTypeGen" required>
+                    <option value="">Select repair type</option>
+                    <option value="Screen Replacement">Screen Replacement</option>
+                    <option value="Battery Replacement">Battery Replacement</option>
+                    <option value="Charging Port">Charging Port</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label>Urgency Level *</label>
+                  <select id="urgencyLevel" required>
+                    <option value="Standard">Standard (2-3 days)</option>
+                    <option value="Express">Express (Same day)</option>
+                    <option value="Emergency">Emergency (4-6 hours)</option>
+                  </select>
+                </div>
+              </div>
               <div class="form-group">
-                <label class="form-label">Phone Brand</label>
-                <select id="phoneBrand" class="form-select">
-                  <option value="">Select your phone brand</option>
-                  <option value="iPhone">iPhone</option>
-                  <option value="Samsung">Samsung</option>
-                  <option value="OnePlus">OnePlus</option>
-                  <option value="Xiaomi">Xiaomi</option>
-                  <option value="Tecno">Tecno</option>
-                  <option value="Infinix">Infinix</option>
-                  <option value="Huawei">Huawei</option>
-                  <option value="Other">Other</option>
-                </select>
+                <label>Issue Description *</label>
+                <textarea id="issueDescription" placeholder="Describe the issue with your device..." rows="4" required></textarea>
               </div>
-              
-              <div class="form-group">
-                <label class="form-label">Repair Needed</label>
-                <select id="repairType" class="form-select">
-                  <option value="">Select the issue</option>
-                  <option value="Screen">Cracked Screen</option>
-                  <option value="Battery">Battery Replacement</option>
-                  <option value="Charging">Charging Port</option>
-                  <option value="Water">Water Damage</option>
-                  <option value="Camera">Camera Repair</option>
-                  <option value="Software">Software Issues</option>
-                  <option value="Other">Other</option>
-                </select>
-              </div>
-              
-              <div id="quoteResult" class="quote-result hidden">
-                <p class="quote-estimate">Estimated Cost: <span id="estimatedCost">GH₵0</span></p>
-                <p class="quote-note">This is an estimate. Final price may vary based on specific model.</p>
-              </div>
-              
-              <button type="submit" class="btn-primary btn-full">
-                Get Exact Quote on WhatsApp
+              <button type="submit" class="btn btn-primary btn-full">
+                <i class="fas fa-qrcode"></i>
+                Generate Order Code
               </button>
             </form>
           </div>
         </div>
-        
-        <div class="pricing-ranges">
-          <div class="pricing-card glass">
-            <h3>Popular Repair Prices</h3>
-            <div class="price-list">
-              <div class="price-item">
-                <div>
-                  <h4>iPhone Screen</h4>
-                  <p>All models</p>
-                </div>
-                <span class="price-range">GH₵280 – GH₵450</span>
-              </div>
-              
-              <div class="price-item">
-                <div>
-                  <h4>Samsung Screen</h4>
-                  <p>All models</p>
-                </div>
-                <span class="price-range">GH₵220 – GH₵400</span>
-              </div>
-              
-              <div class="price-item">
-                <div>
-                  <h4>Battery Replacement</h4>
-                  <p>Most phones</p>
-                </div>
-                <span class="price-range">GH₵80 – GH₵180</span>
-              </div>
-              
-              <div class="price-item">
-                <div>
-                  <h4>Charging Port</h4>
-                  <p>Fast charging restored</p>
-                </div>
-                <span class="price-range">GH₵50 – GH₵150</span>
-              </div>
 
-              <div class="price-item">
-                <div>
-                  <h4>Software Fix</h4>
-                  <p>Updates & optimization</p>
-                </div>
-                <span class="price-range">GH₵40 – GH₵120</span>
+        <div class="order-preview">
+          <div class="preview-card">
+            <h3>Quick Preview</h3>
+            <div class="preview-content">
+              <div class="preview-item">
+                <label>Order Code</label>
+                <span class="order-code-preview">CF-2024-XXXX</span>
               </div>
-
-              <div class="price-item">
-                <div>
-                  <h4>Camera Repair</h4>
-                  <p>Front & back cameras</p>
-                </div>
-                <span class="price-range">GH₵120 – GH₵300</span>
+              <div class="preview-item">
+                <label>Estimated Time</label>
+                <span>2-4 hours</span>
+              </div>
+              <div class="preview-item">
+                <label>Service Type</label>
+                <span>Premium Repair</span>
               </div>
             </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Order Generation Section -->
-  <section id="generate" class="order-generation">
-    <div class="container generation-container">
-      <div class="generation-header">
-        <h2 class="section-title">
-          Generate Your <span class="brand-gradient">Order Code</span>
-        </h2>
-        <p class="section-description">
-          Create a unique tracking code for your phone repair order
-        </p>
-      </div>
-
-      <!-- Order Generation Form -->
-      <div id="generationForm" class="generation-form">
-        <h3>Order Information</h3>
-        
-        <form id="orderForm" class="order-form">
-          <div class="form-grid">
-            <div class="form-group">
-              <label class="form-label">Customer Name *</label>
-              <input type="text" id="customerName" class="form-input" placeholder="Enter your full name" required>
-            </div>
-            
-            <div class="form-group">
-              <label class="form-label">Phone Number *</label>
-              <input type="tel" id="customerPhone" class="form-input" placeholder="e.g., 0246912468" required>
-            </div>
-            
-            <div class="form-group">
-              <label class="form-label">Email Address</label>
-              <input type="email" id="customerEmail" class="form-input" placeholder="your.email@uenr.edu.gh">
-            </div>
-            
-            <div class="form-group">
-              <label class="form-label">Hostel/Room Number *</label>
-              <input type="text" id="customerHostel" class="form-input" placeholder="e.g., Republic Hall, Room 205" required>
-            </div>
-            
-            <div class="form-group">
-              <label class="form-label">Device Brand *</label>
-              <select id="deviceBrand" class="form-select" required>
-                <option value="">Select brand</option>
-                <option value="iPhone">iPhone</option>
-                <option value="Samsung">Samsung</option>
-                <option value="OnePlus">OnePlus</option>
-                <option value="Xiaomi">Xiaomi</option>
-                <option value="Tecno">Tecno</option>
-                <option value="Infinix">Infinix</option>
-                <option value="Huawei">Huawei</option>
-                <option value="Other">Other</option>
-              </select>
-            </div>
-            
-            <div class="form-group">
-              <label class="form-label">Device Model *</label>
-              <input type="text" id="deviceModel" class="form-input" placeholder="e.g., iPhone 13 Pro" required>
-            </div>
-            
-            <div class="form-group">
-              <label class="form-label">Repair Type *</label>
-              <select id="repairTypeGen" class="form-select" required>
-                <option value="">Select repair type</option>
-                <option value="Screen Replacement">Screen Replacement</option>
-                <option value="Battery Replacement">Battery Replacement</option>
-                <option value="Charging Port">Charging Port Repair</option>
-                <option value="Water Damage">Water Damage Repair</option>
-                <option value="Software Issue">Software Issue</option>
-                <option value="Camera Repair">Camera Repair</option>
-                <option value="Other">Other Repair</option>
-              </select>
-            </div>
-            
-            <div class="form-group">
-              <label class="form-label">Urgency Level *</label>
-              <select id="urgencyLevel" class="form-select" required>
-                <option value="Standard">Standard (2-3 days)</option>
-                <option value="Express">Express (Same day)</option>
-                <option value="Emergency">Emergency (4-6 hours)</option>
-              </select>
-            </div>
-          </div>
-          
-          <div class="form-group">
-            <label class="form-label">Issue Description *</label>
-            <textarea id="issueDescription" class="form-input textarea" rows="4" placeholder="Describe the issue with your device in detail..." required></textarea>
-          </div>
-          
-          <div class="form-submit">
-            <button type="submit" class="btn-primary" id="generateOrderBtn">
-              <i class="fas fa-qrcode"></i>
-              Generate Order Code
-            </button>
-          </div>
-        </form>
-      </div>
-
-      <!-- Order Code Display -->
-      <div id="orderCodeDisplay" class="order-code-display hidden">
-        <div class="confirmation-message">
-          <div class="success-icon">
-            <i class="fas fa-check"></i>
-          </div>
-          <h3>Order Created Successfully!</h3>
-          <p>Your repair order has been registered. Here's your order code:</p>
-        </div>
-
-        <div class="order-code-card">
-          <div class="order-code-label">Your Order Code</div>
-          <div id="generatedOrderCode" class="order-code-value">CF-2023-0000</div>
-          <div class="order-code-note">Use this code to track your repair progress</div>
-          
-          <!-- QR Code -->
-          <div id="qrCodeContainer" class="qr-code">
-            <!-- QR code will be generated here -->
-          </div>
-        </div>
-
-        <!-- Order Details -->
-        <div class="order-details">
-          <div class="detail-item">
-            <div class="detail-label">Customer Name</div>
-            <div id="displayCustomerName" class="detail-value">--</div>
-          </div>
-          <div class="detail-item">
-            <div class="detail-label">Device</div>
-            <div id="displayDeviceInfo" class="detail-value">--</div>
-          </div>
-          <div class="detail-item">
-            <div class="detail-label">Repair Type</div>
-            <div id="displayRepairType" class="detail-value">--</div>
-          </div>
-          <div class="detail-item">
-            <div class="detail-label">Urgency</div>
-            <div id="displayUrgency" class="detail-value">--</div>
-          </div>
-        </div>
-
-        <!-- Action Buttons -->
-        <div class="action-buttons">
-          <button id="trackThisOrder" class="btn-primary">
-            <i class="fas fa-search"></i>
-            Track This Order
-          </button>
-          <button id="printOrderCode" class="btn-secondary">
-            <i class="fas fa-print"></i>
-            Print Details
-          </button>
-          <button id="newOrder" class="btn-secondary">
-            <i class="fas fa-plus"></i>
-            New Order
-          </button>
-        </div>
-
-        <!-- Share Options -->
-        <div class="share-options">
-          <button id="shareWhatsApp" class="share-btn">
-            <i class="fab fa-whatsapp"></i>
-            Share on WhatsApp
-          </button>
-          <button id="copyCode" class="share-btn">
-            <i class="fas fa-copy"></i>
-            Copy Code
-          </button>
-          <button id="saveImage" class="share-btn">
-            <i class="fas fa-download"></i>
-            Save as Image
-          </button>
-        </div>
-
-        <!-- Next Steps -->
-        <div class="next-steps glass">
-          <h4>What Happens Next?</h4>
-          <div class="steps-list">
-            <div class="step-item">
-              <div class="step-icon">
-                <i class="fas fa-check"></i>
-              </div>
-              <span>We'll contact you within 30 minutes to confirm details</span>
-            </div>
-            <div class="step-item">
-              <div class="step-icon">
-                <i class="fas fa-check"></i>
-              </div>
-              <span>Free hostel pickup will be arranged at your convenience</span>
-            </div>
-            <div class="step-item">
-              <div class="step-icon">
-                <i class="fas fa-check"></i>
-              </div>
-              <span>Track your repair progress using your order code</span>
+            <div class="preview-features">
+              <h4>What's Included:</h4>
+              <ul>
+                <li><i class="fas fa-check"></i> Free hostel pickup & delivery</li>
+                <li><i class="fas fa-check"></i> 6 months warranty</li>
+                <li><i class="fas fa-check"></i> Quality parts</li>
+                <li><i class="fas fa-check"></i> Professional service</li>
+              </ul>
             </div>
           </div>
         </div>
@@ -724,222 +445,47 @@
   </section>
 
   <!-- Order Tracker Section -->
-  <section id="tracker" class="tracker">
-    <div class="container tracker-container">
-      <div class="tracker-header">
-        <h2 class="section-title">Track Your Repair Order</h2>
-        <p class="section-description">Enter your order code to see real-time progress updates</p>
+  <section id="tracker" class="tracker-section">
+    <div class="container">
+      <div class="section-header">
+        <h2 class="section-title">Track Your Repair</h2>
+        <p class="section-subtitle">Real-time updates on your repair progress</p>
       </div>
 
-      <!-- Search Container -->
-      <div class="search-container">
-        <div class="search-box">
-          <input 
-            type="text" 
-            id="orderIdInput" 
-            class="search-input" 
-            placeholder="Enter order code (e.g., CF-2023-2581)"
-            autocomplete="off"
-          >
-          <button id="trackOrderBtn" class="btn-primary">
-            <i class="fas fa-search"></i>
-            Track Order
-          </button>
-        </div>
-        
-        <div class="search-note">
-          Don't have an order code? 
-          <a href="#generate" class="search-link">Generate one here</a>
-        </div>
-
-        <!-- Auto Refresh Controls -->
-        <div class="auto-refresh-toggle">
-          <label class="toggle-label">
-            <input type="checkbox" id="autoRefreshToggle" checked>
-            <div class="toggle-slider">
-              <div class="toggle-handle"></div>
-            </div>
-            <span class="toggle-text">Auto Refresh</span>
-          </label>
-          
-          <button id="manualRefresh" class="refresh-btn">
-            <i class="fas fa-sync-alt"></i>
-            Refresh Now
-          </button>
-        </div>
-      </div>
-
-      <!-- Order Not Found Message -->
-      <div id="noOrderMessage" class="no-order-message hidden">
-        <div class="error-icon">
-          <i class="fas fa-search"></i>
-        </div>
-        <h3>Order Not Found</h3>
-        <p id="errorMessage">We couldn't find an order with that code. Please check your order code and try again, or generate a new order code if you haven't created one yet.</p>
-        <div class="error-actions">
-          <button id="tryAgainBtn" class="btn-primary">
-            <i class="fas fa-redo"></i>
-            Try Again
-          </button>
-          <a href="#generate" class="btn-secondary">
-            <i class="fas fa-qrcode"></i>
-            Generate Order Code
-          </a>
-        </div>
-      </div>
-
-      <!-- Order Tracking Display -->
-      <div id="orderTracking" class="order-tracking hidden">
-        <!-- Last Updated -->
-        <div class="last-updated-container">
-          <span class="last-updated">Last updated: <span id="updateTime">--:--:--</span></span>
-          <span class="live-indicator">
-            <span class="live-pulse"></span>
-            LIVE
-          </span>
-        </div>
-
-        <!-- Order Info Card -->
-        <div class="tracker-card glass">
-          <div class="order-info">
-            <div class="info-item">
-              <div class="info-label">Order Code</div>
-              <div class="info-value" id="displayOrderId">--</div>
-            </div>
-            <div class="info-item">
-              <div class="info-label">Device</div>
-              <div class="info-value" id="displayDevice">--</div>
-            </div>
-            <div class="info-item">
-              <div class="info-label">Repair Type</div>
-              <div class="info-value" id="displayRepair">--</div>
-            </div>
-            <div class="info-item">
-              <div class="info-label">Status</div>
-              <div class="info-value">
-                <span id="displayStatus" class="status-badge status-pending">--</span>
-              </div>
-            </div>
-            <div class="info-item">
-              <div class="info-label">Completion</div>
-              <div class="info-value" id="displayCompletion">--</div>
-            </div>
-          </div>
-
-          <!-- Progress Tracker -->
-          <div class="progress-tracker">
-            <div class="progress-bar" id="progressBar"></div>
-            
-            <div class="tracker-step step-completed">
-              <div class="step-icon">
-                <i class="fas fa-clipboard-check"></i>
-              </div>
-              <div class="step-label">Order Received</div>
-              <div class="step-time" id="step1Time">--:--</div>
-            </div>
-            
-            <div class="tracker-step">
-              <div class="step-icon">
-                <i class="fas fa-search"></i>
-              </div>
-              <div class="step-label">Diagnosis</div>
-              <div class="step-time" id="step2Time">--:--</div>
-            </div>
-            
-            <div class="tracker-step">
-              <div class="step-icon">
-                <i class="fas fa-tools"></i>
-              </div>
-              <div class="step-label">Repair</div>
-              <div class="step-time" id="step3Time">--:--</div>
-            </div>
-            
-            <div class="tracker-step">
-              <div class="step-icon">
-                <i class="fas fa-check-circle"></i>
-              </div>
-              <div class="step-label">Quality Check</div>
-              <div class="step-time" id="step4Time">--:--</div>
-            </div>
-            
-            <div class="tracker-step">
-              <div class="step-icon">
-                <i class="fas fa-box"></i>
-              </div>
-              <div class="step-label">Ready</div>
-              <div class="step-time" id="step5Time">--:--</div>
-            </div>
-          </div>
-
-          <!-- Estimated Time -->
-          <div class="estimated-time">
-            <div class="time-icon">
-              <i class="fas fa-clock"></i>
-            </div>
-            <div>
-              <div class="time-title">Estimated Completion</div>
-              <div class="time-subtitle">Ready by <span id="readyTime">--:--</span> • <span id="estTime">--</span> remaining</div>
-            </div>
-          </div>
-
-          <!-- Technician Info -->
-          <div class="technician-card">
-            <div class="technician-avatar">AB</div>
-            <div class="technician-info">
-              <div class="technician-name">Abdul Latif Bright (Spice BlaQ)</div>
-              <div class="technician-role">Founder & Repair Specialist</div>
-              <div class="technician-status">Currently assigned to your repair</div>
-            </div>
-          </div>
-
-          <!-- Repair Updates -->
-          <div class="updates-container">
-            <h4>Repair Updates</h4>
-            <div id="updatesContainer">
-              <!-- Updates will be dynamically inserted here -->
-            </div>
-          </div>
-
-          <!-- Contact Actions -->
-          <div class="contact-actions">
-            <a href="https://wa.me/233246912468" class="btn-primary btn-contact">
-              <i class="fab fa-whatsapp"></i>
-              Message Technician
-            </a>
-            <a href="tel:+233246912468" class="btn-secondary btn-contact">
-              <i class="fas fa-phone"></i>
-              Call Now
-            </a>
-          </div>
-
-          <!-- Share Options -->
-          <div class="share-options" style="margin-top: 2rem; justify-content: center;">
-            <button id="shareWhatsAppTracker" class="share-btn">
-              <i class="fab fa-whatsapp"></i>
-              Share Order
-            </button>
-            <button id="copyOrderCodeTracker" class="share-btn">
-              <i class="fas fa-copy"></i>
-              Copy Code
+      <div class="tracker-container">
+        <div class="tracker-search">
+          <div class="search-box">
+            <input type="text" id="orderIdInput" placeholder="Enter your order code (e.g., CF-2024-2581)">
+            <button id="trackOrderBtn" class="btn btn-primary">
+              <i class="fas fa-search"></i>
+              Track Order
             </button>
           </div>
+          <p class="search-note">
+            Don't have an order code? <a href="#generate">Generate one here</a>
+          </p>
         </div>
-      </div>
 
-      <!-- Demo Orders -->
-      <div class="demo-orders">
-        <h3>Try Demo Orders</h3>
-        <p>Test the tracking system with these sample orders</p>
-        <div class="demo-buttons">
-          <button class="demo-order-btn" data-order="CF-2023-2581">
-            iPhone 13 Pro - In Progress
-          </button>
-          <button class="demo-order-btn" data-order="CF-2023-1924">
-            Samsung S21 - Completed
-          </button>
-          <button class="demo-order-btn" data-order="CF-2023-3157">
-            OnePlus 9 - Ready
-          </button>
+        <div id="trackerResults" class="tracker-results">
+          <!-- Results will be populated by JavaScript -->
+        </div>
+
+        <div class="demo-orders">
+          <h4>Try Demo Orders:</h4>
+          <div class="demo-buttons">
+            <button class="demo-btn" data-order="CF-2024-2581">
+              <i class="fas fa-mobile-alt"></i>
+              iPhone - In Progress
+            </button>
+            <button class="demo-btn" data-order="CF-2024-1924">
+              <i class="fas fa-battery-full"></i>
+              Samsung - Completed
+            </button>
+            <button class="demo-btn" data-order="CF-2024-3157">
+              <i class="fas fa-plug"></i>
+              OnePlus - Ready
+            </button>
+          </div>
         </div>
       </div>
     </div>
@@ -948,20 +494,24 @@
   <!-- Testimonials Section -->
   <section id="testimonials" class="testimonials">
     <div class="container">
-      <h2 class="section-title">What Students Say</h2>
-      <p class="section-description">Don't just take our word for it - hear from satisfied UENR students</p>
-      
+      <div class="section-header">
+        <h2 class="section-title">Student Reviews</h2>
+        <p class="section-subtitle">What UENR students say about our service</p>
+      </div>
+
       <div class="testimonials-grid">
-        <div class="testimonial-card glass">
+        <div class="testimonial-card">
           <div class="testimonial-header">
-            <div class="testimonial-avatar">AK</div>
+            <div class="avatar">AK</div>
             <div>
               <h4>Abena Kumi</h4>
-              <p>Computer Science, Level 300</p>
+              <span>Computer Science, Level 300</span>
             </div>
           </div>
-          <p>"My iPhone screen was completely shattered after I dropped it in the library. CampusFix had it fixed in just 3 hours for half the price I was quoted in town. Amazing service!"</p>
-          <div class="testimonial-rating">
+          <div class="testimonial-content">
+            <p>"My iPhone screen was completely shattered. CampusFix had it fixed in 3 hours for half the town price. Amazing service!"</p>
+          </div>
+          <div class="rating">
             <i class="fas fa-star"></i>
             <i class="fas fa-star"></i>
             <i class="fas fa-star"></i>
@@ -969,17 +519,19 @@
             <i class="fas fa-star"></i>
           </div>
         </div>
-        
-        <div class="testimonial-card glass">
+
+        <div class="testimonial-card">
           <div class="testimonial-header">
-            <div class="testimonial-avatar">KA</div>
+            <div class="avatar">KA</div>
             <div>
               <h4>Kwame Asante</h4>
-              <p>Electrical Engineering, Level 400</p>
+              <span>Electrical Engineering, Level 400</span>
             </div>
           </div>
-          <p>"Battery issues were ruining my phone experience. These guys replaced it same-day and even delivered it to my hostel. The battery life is now better than when I first bought the phone!"</p>
-          <div class="testimonial-rating">
+          <div class="testimonial-content">
+            <p>"Battery issues were ruining my phone. These guys replaced it same-day and delivered to my hostel. Better than new!"</p>
+          </div>
+          <div class="rating">
             <i class="fas fa-star"></i>
             <i class="fas fa-star"></i>
             <i class="fas fa-star"></i>
@@ -987,92 +539,24 @@
             <i class="fas fa-star"></i>
           </div>
         </div>
-        
-        <div class="testimonial-card glass">
+
+        <div class="testimonial-card">
           <div class="testimonial-header">
-            <div class="testimonial-avatar">EM</div>
+            <div class="avatar">EM</div>
             <div>
               <h4>Esi Mensah</h4>
-              <p>Business Admin, Level 200</p>
+              <span>Business Admin, Level 200</span>
             </div>
           </div>
-          <p>"Water damage had killed my phone right before exams. I thought it was gone forever, but CampusFix brought it back to life in 2 days. Saved me from buying a new phone!"</p>
-          <div class="testimonial-rating">
+          <div class="testimonial-content">
+            <p>"Water damage killed my phone before exams. CampusFix brought it back to life in 2 days. Saved me from buying new!"</p>
+          </div>
+          <div class="rating">
             <i class="fas fa-star"></i>
             <i class="fas fa-star"></i>
             <i class="fas fa-star"></i>
             <i class="fas fa-star"></i>
             <i class="fas fa-star"></i>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- FAQ Section -->
-  <section class="faq">
-    <div class="container">
-      <h2 class="section-title">Frequently Asked Questions</h2>
-      <p class="section-description">Quick answers to common questions about our repair services</p>
-      
-      <div class="faq-grid">
-        <div class="faq-item glass">
-          <div class="faq-question">
-            <h3>How long do repairs take?</h3>
-            <i class="fas fa-chevron-down"></i>
-          </div>
-          <div class="faq-answer">
-            <p>Most repairs are completed within 2-4 hours. Screen replacements and battery changes are usually same-day services. Complex issues like water damage may take 1-2 days.</p>
-          </div>
-        </div>
-        
-        <div class="faq-item glass">
-          <div class="faq-question">
-            <h3>Do you offer warranty?</h3>
-            <i class="fas fa-chevron-down"></i>
-          </div>
-          <div class="faq-answer">
-            <p>Yes! Screen repairs come with 6 months warranty, batteries with 1 year warranty, and other repairs with 3-6 months warranty depending on the service.</p>
-          </div>
-        </div>
-        
-        <div class="faq-item glass">
-          <div class="faq-question">
-            <h3>What areas do you serve?</h3>
-            <i class="fas fa-chevron-down"></i>
-          </div>
-          <div class="faq-answer">
-            <p>We serve the entire UENR campus including all hostels - Republic Hall, Independence Hall, Freedom Hall, and all other campus residences.</p>
-          </div>
-        </div>
-        
-        <div class="faq-item glass">
-          <div class="faq-question">
-            <h3>Do I need to pay before repair?</h3>
-            <i class="fas fa-chevron-down"></i>
-          </div>
-          <div class="faq-answer">
-            <p>No payment is required until your phone is repaired and you're satisfied with the service. We believe in earning your trust first.</p>
-          </div>
-        </div>
-        
-        <div class="faq-item glass">
-          <div class="faq-question">
-            <h3>What payment methods do you accept?</h3>
-            <i class="fas fa-chevron-down"></i>
-          </div>
-          <div class="faq-answer">
-            <p>We accept mobile money (MTN, Vodafone, AirtelTigo), cash, and bank transfers. Whatever is most convenient for you!</p>
-          </div>
-        </div>
-        
-        <div class="faq-item glass">
-          <div class="faq-question">
-            <h3>Can I get my data back after repair?</h3>
-            <i class="fas fa-chevron-down"></i>
-          </div>
-          <div class="faq-answer">
-            <p>We always backup your data before starting any repair. In 98% of cases, all your data remains intact. For complex issues, we'll inform you beforehand.</p>
           </div>
         </div>
       </div>
@@ -1080,35 +564,33 @@
   </section>
 
   <!-- CTA Section -->
-  <section class="cta">
-    <div class="container cta-container">
-      <h2>Ready to Fix Your Phone?</h2>
-      <p>Don't let a broken phone disrupt your studies. Contact us now for a fast, affordable repair.</p>
-      
-      <div class="cta-buttons">
-        <a href="https://wa.me/233246912468" class="btn-primary btn-large pulse-glow">
-          <i class="fab fa-whatsapp"></i>
-          Message on WhatsApp
-        </a>
-        <a href="tel:+233246912468" class="btn-secondary btn-large">
-          <i class="fas fa-phone"></i>
-          Call (024) 691-2468
-        </a>
-      </div>
-      
-      <div class="contact-info">
-        <div class="contact-item">
-          <i class="fas fa-clock"></i>
-          <div>
-            <h4>Working Hours</h4>
-            <p>Mon-Fri: 8:00 AM - 8:00 PM<br>Sat: 10:00 AM - 6:00 PM</p>
-          </div>
+  <section class="cta-section">
+    <div class="container">
+      <div class="cta-content">
+        <h2>Ready to Fix Your Phone?</h2>
+        <p>Don't let a broken phone disrupt your studies. Get professional repair service today.</p>
+        <div class="cta-actions">
+          <a href="https://wa.me/233246912468" class="btn btn-primary btn-large">
+            <i class="fab fa-whatsapp"></i>
+            WhatsApp Now
+          </a>
+          <a href="tel:+233246912468" class="btn btn-secondary btn-large">
+            <i class="fas fa-phone"></i>
+            Call (024) 691-2468
+          </a>
         </div>
-        <div class="contact-item">
-          <i class="fas fa-map-marker-alt"></i>
-          <div>
-            <h4>Service Area</h4>
-            <p>UENR Campus & All Hostels<br>Free Pickup & Delivery</p>
+        <div class="cta-features">
+          <div class="feature">
+            <i class="fas fa-clock"></i>
+            <span>Same-Day Service</span>
+          </div>
+          <div class="feature">
+            <i class="fas fa-shield-alt"></i>
+            <span>6 Months Warranty</span>
+          </div>
+          <div class="feature">
+            <i class="fas fa-home"></i>
+            <span>Free Hostel Pickup</span>
           </div>
         </div>
       </div>
@@ -1116,125 +598,83 @@
   </section>
 
   <!-- Footer -->
-  <footer id="contact" class="footer">
+  <footer class="footer">
     <div class="container">
-      <div class="footer-grid">
-        <div class="footer-column">
+      <div class="footer-content">
+        <div class="footer-section">
           <div class="footer-logo">
-            <div class="logo">
-              <div class="logo-icon">
-                <i class="fas fa-tools"></i>
-              </div>
-              <span>Campus<span class="brand-gradient">Fix</span></span>
-            </div>
+            <i class="fas fa-tools"></i>
+            <span>Campus<span>Fix</span></span>
           </div>
-          <p>UENR's trusted student-run phone repair service. Fast, affordable, and reliable repairs with free hostel pickup and delivery.</p>
+          <p>UENR's premium student-run phone repair service. Fast, affordable, and reliable.</p>
           <div class="social-links">
-            <a href="https://wa.me/233246912468" class="social-link">
-              <i class="fab fa-whatsapp"></i>
-            </a>
-            <a href="https://facebook.com/campusfixuenr" class="social-link">
-              <i class="fab fa-facebook-f"></i>
-            </a>
-            <a href="https://instagram.com/campusfixuenr" class="social-link">
-              <i class="fab fa-instagram"></i>
-            </a>
-            <a href="https://twitter.com/campusfixuenr" class="social-link">
-              <i class="fab fa-twitter"></i>
-            </a>
+            <a href="https://wa.me/233246912468"><i class="fab fa-whatsapp"></i></a>
+            <a href="#"><i class="fab fa-facebook"></i></a>
+            <a href="#"><i class="fab fa-instagram"></i></a>
           </div>
         </div>
-        
-        <div class="footer-column">
+
+        <div class="footer-section">
           <h4>Quick Links</h4>
-          <ul class="footer-links">
-            <li><a href="#home"><i class="fas fa-home"></i> Home</a></li>
-            <li><a href="#services"><i class="fas fa-tools"></i> Services</a></li>
-            <li><a href="#pricing"><i class="fas fa-tag"></i> Pricing</a></li>
-            <li><a href="#tracker"><i class="fas fa-search"></i> Track Order</a></li>
-            <li><a href="#generate"><i class="fas fa-qrcode"></i> Get Order Code</a></li>
+          <ul>
+            <li><a href="#home">Home</a></li>
+            <li><a href="#services">Services</a></li>
+            <li><a href="#pricing">Pricing</a></li>
+            <li><a href="#tracker">Track Repair</a></li>
           </ul>
         </div>
-        
-        <div class="footer-column">
-          <h4>Contact Info</h4>
-          <ul class="footer-links">
-            <li><a href="tel:+233246912468"><i class="fas fa-phone"></i> (024) 691-2468</a></li>
-            <li><a href="https://wa.me/233246912468"><i class="fab fa-whatsapp"></i> WhatsApp</a></li>
-            <li><a href="mailto:repair@campusfix-uenr.com"><i class="fas fa-envelope"></i> repair@campusfix-uenr.com</a></li>
-            <li><i class="fas fa-map-marker-alt"></i> UENR Campus</li>
-            <li><i class="fas fa-clock"></i> Mon-Fri: 8AM-8PM</li>
+
+        <div class="footer-section">
+          <h4>Contact</h4>
+          <ul>
+            <li><i class="fas fa-phone"></i> (024) 691-2468</li>
+            <li><i class="fab fa-whatsapp"></i> WhatsApp</li>
+            <li><i class="fas fa-envelope"></i> repair@campusfix.edu.gh</li>
+            <li><i class="fas fa-map-marker"></i> UENR Campus</li>
           </ul>
         </div>
-        
-        <div class="footer-column">
-          <h4>Our Services</h4>
-          <ul class="footer-links">
-            <li><i class="fas fa-mobile-alt"></i> Screen Replacement</li>
-            <li><i class="fas fa-battery-half"></i> Battery Replacement</li>
-            <li><i class="fas fa-plug"></i> Charging Port Repair</li>
-            <li><i class="fas fa-tint"></i> Water Damage Repair</li>
-            <li><i class="fas fa-camera"></i> Camera Repair</li>
-            <li><i class="fas fa-microchip"></i> Software Issues</li>
+
+        <div class="footer-section">
+          <h4>Services</h4>
+          <ul>
+            <li>Screen Replacement</li>
+            <li>Battery Replacement</li>
+            <li>Charging Port</li>
+            <li>Water Damage</li>
+            <li>Camera Repair</li>
           </ul>
         </div>
       </div>
-      
+
       <div class="footer-bottom">
-        <p>&copy; 2023 CampusFix UENR. All rights reserved. | Student-Run Phone Repair Service</p>
-        <p>Designed with <i class="fas fa-heart text-red-400"></i> for UENR Students</p>
+        <p>&copy; 2024 CampusFix UENR. All rights reserved.</p>
       </div>
     </div>
   </footer>
 
-  <!-- JavaScript Files -->
-  <script src="js/google-sheets-backend.js"></script>
+  <!-- Floating Action Button -->
+  <div class="fab-container">
+    <button class="fab-button" id="fabMain">
+      <i class="fas fa-tools"></i>
+    </button>
+    <div class="fab-actions">
+      <a href="https://wa.me/233246912468" class="fab-action">
+        <i class="fab fa-whatsapp"></i>
+      </a>
+      <a href="tel:+233246912468" class="fab-action">
+        <i class="fas fa-phone"></i>
+      </a>
+      <a href="#generate" class="fab-action">
+        <i class="fas fa-qrcode"></i>
+      </a>
+    </div>
+  </div>
+
+  <!-- Scripts -->
   <script src="js/main.js"></script>
   <script src="js/order-generator.js"></script>
   <script src="js/order-tracker.js"></script>
   <script src="js/quote-calculator.js"></script>
-
-  <!-- Toast Container (for dynamic toast messages) -->
-  <div id="toastContainer" style="position: fixed; top: 20px; right: 20px; z-index: 10000;"></div>
-
-  <script>
-    // Emergency Mode Toggle
-    document.getElementById('emergencyToggle').addEventListener('click', function() {
-      document.body.classList.toggle('emergency-mode');
-      const isEmergency = document.body.classList.contains('emergency-mode');
-      
-      this.innerHTML = isEmergency ? 
-        '<i class="fas fa-fire"></i> Emergency Active' : 
-        '<i class="fas fa-bolt"></i> Emergency Repair';
-      
-      this.classList.toggle('pulse-glow', isEmergency);
-      
-      // Show emergency message
-      if (isEmergency) {
-        alert('🚨 EMERGENCY MODE ACTIVATED!\n\nWe will prioritize your repair and contact you immediately. Please ensure your phone is accessible for quick pickup.');
-      }
-    });
-
-    // Add click tracking for analytics
-    document.addEventListener('DOMContentLoaded', function() {
-      const trackableElements = document.querySelectorAll('a[href*="wa.me"], a[href*="tel:"], button');
-      trackableElements.forEach(element => {
-        element.addEventListener('click', function(e) {
-          const action = this.getAttribute('href') ? 'link_click' : 'button_click';
-          const label = this.textContent.trim() || this.getAttribute('href');
-          console.log('User Action:', action, label);
-          // Here you would typically send to Google Analytics
-        });
-      });
-    });
-
-    // Enhanced meta tags for SEO
-    const metaDescription = document.querySelector('meta[name="description"]');
-    if (metaDescription) {
-      metaDescription.setAttribute('content', 
-        'UENR student-run phone repair service. 70% cheaper than town. Same-day screen, battery, charging port repairs with free hostel pickup. WhatsApp: 0246912468'
-      );
-    }
-  </script>
+  <script src="js/jsonbin-backend.js"></script>
 </body>
 </html>
