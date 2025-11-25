@@ -1,5 +1,5 @@
 // ================================
-// ORDER GENERATOR - COMPATIBLE VERSION
+// SIMPLE ORDER GENERATOR - NO AUTO WHATSAPP
 // ================================
 
 class OrderGenerator {
@@ -22,8 +22,8 @@ class OrderGenerator {
         const formData = this.getFormData();
         
         // Basic validation
-        if (!formData.customerName || !formData.customerPhone) {
-            alert('Please fill in required fields');
+        if (!formData.customerName || !formData.customerPhone || !formData.deviceModel) {
+            alert('Please fill in all required fields');
             return;
         }
 
@@ -36,11 +36,8 @@ class OrderGenerator {
             // Save to storage
             this.saveOrder(order);
             
-            // Show success
+            // Show success (NO AUTO WHATSAPP)
             this.showSuccess(order);
-            
-            // Send WhatsApp
-            this.sendWhatsAppMessages(order);
             
         } catch (error) {
             console.error('Error:', error);
@@ -71,7 +68,6 @@ class OrderGenerator {
         const orderCode = `CF-${new Date().getFullYear()}-${this.orderCounter.toString().padStart(4, '0')}`;
         
         return {
-            // STANDARDIZED PROPERTY NAMES - Admin dashboard expects these
             id: Date.now().toString(),
             order_code: orderCode,
             customer_name: formData.customerName,
@@ -118,12 +114,8 @@ class OrderGenerator {
         // Save back to localStorage
         localStorage.setItem('campusFixOrders', JSON.stringify(existingOrders));
         
-        // DEBUG: Verify save
-        console.log('💾 ORDER SAVED:', {
-            code: order.order_code,
-            allOrders: Object.keys(existingOrders),
-            storageKey: 'campusFixOrders'
-        });
+        console.log('✅ ORDER SAVED:', order.order_code);
+        console.log('📊 TOTAL ORDERS:', Object.keys(existingOrders).length);
     }
 
     showSuccess(order) {
@@ -131,33 +123,41 @@ class OrderGenerator {
         modal.style.cssText = `
             position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
             background: rgba(0,0,0,0.8); display: flex; align-items: center; 
-            justify-content: center; z-index: 10000;
+            justify-content: center; z-index: 10000; font-family: Arial, sans-serif;
         `;
         
         modal.innerHTML = `
-            <div style="background: #1e293b; padding: 30px; border-radius: 15px; text-align: center; max-width: 500px; width: 90%;">
+            <div style="background: #1e293b; padding: 30px; border-radius: 15px; text-align: center; max-width: 500px; width: 90%; color: white; border: 2px solid #334155;">
                 <div style="color: #10b981; font-size: 3rem; margin-bottom: 15px;">
                     <i class="fas fa-check-circle"></i>
                 </div>
-                <h3 style="margin-bottom: 15px;">Order Created! 🎉</h3>
-                <p><strong>Order Code:</strong> ${order.order_code}</p>
-                <p style="margin: 20px 0; color: #94a3b8;">Check your WhatsApp for confirmation...</p>
+                <h3 style="margin-bottom: 15px; color: white;">Order Created Successfully! 🎉</h3>
+                <p style="margin-bottom: 10px;"><strong>Order Code:</strong></p>
+                <div style="background: #0f172a; padding: 15px; border-radius: 10px; margin: 15px 0; border: 1px solid #334155;">
+                    <span style="font-size: 1.5rem; font-weight: bold; color: #6366f1;">${order.order_code}</span>
+                </div>
                 
-                <div style="background: rgba(99, 102, 241, 0.1); padding: 15px; border-radius: 10px; margin: 15px 0;">
-                    <button onclick="window.orderGenerator.sendCustomerMessage('${order.order_code}')" 
-                            style="background: #6366f1; color: white; border: none; padding: 12px 20px; border-radius: 8px; margin: 5px; cursor: pointer;">
-                        <i class="fab fa-whatsapp"></i> Send to Customer
+                <p style="margin: 20px 0; color: #94a3b8; line-height: 1.5;">
+                    Your repair order has been created successfully! 
+                    You can now track your repair progress using the order code above.
+                </p>
+                
+                <div style="display: flex; gap: 10px; justify-content: center; margin-top: 25px;">
+                    <button onclick="window.orderGenerator.closeSuccessModal('${order.order_code}')" 
+                            style="background: #6366f1; color: white; border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer; font-weight: 600;">
+                        Track My Repair
                     </button>
-                    <button onclick="window.orderGenerator.sendAdminMessage('${order.order_code}')" 
-                            style="background: #475569; color: white; border: none; padding: 12px 20px; border-radius: 8px; margin: 5px; cursor: pointer;">
-                        <i class="fab fa-whatsapp"></i> Send to Admin
+                    <button onclick="window.orderGenerator.closeModal()" 
+                            style="background: transparent; color: #94a3b8; border: 1px solid #94a3b8; padding: 12px 24px; border-radius: 8px; cursor: pointer;">
+                        Close
                     </button>
                 </div>
                 
-                <button onclick="this.closest('.success-modal').remove(); document.getElementById('orderIdInput').value='${order.order_code}'; document.getElementById('tracker').scrollIntoView();" 
-                        style="background: transparent; color: #6366f1; border: 2px solid #6366f1; padding: 10px 20px; border-radius: 8px; margin-top: 10px; cursor: pointer;">
-                    Close & Track Order
-                </button>
+                <div style="margin-top: 20px; padding: 15px; background: rgba(99, 102, 241, 0.1); border-radius: 8px;">
+                    <small style="color: #94a3b8;">
+                        <strong>Next Steps:</strong> Go to "Track Repair" section and enter your order code to see real-time updates.
+                    </small>
+                </div>
             </div>
         `;
         
@@ -165,44 +165,34 @@ class OrderGenerator {
         document.body.appendChild(modal);
     }
 
-    sendWhatsAppMessages(order) {
-        const customerMsg = `✅ *CampusFix UENR - Order Confirmation*
-
-📦 Order: ${order.order_code}
-👤 Customer: ${order.customer_name}
-📱 Device: ${order.device_brand} ${order.device_model}
-🔧 Repair: ${order.repair_type}
-
-I'll contact you within 30 minutes!`;
-
-        const adminMsg = `🆕 *NEW ORDER - ${order.order_code}*
-Customer: ${order.customer_name}
-Phone: ${order.customer_phone}
-Device: ${order.device_brand} ${order.device_model}`;
-
-        // Open WhatsApp
-        window.open(`https://wa.me/${order.customer_phone.replace(/\D/g, '')}?text=${encodeURIComponent(customerMsg)}`, '_blank');
+    closeSuccessModal(orderCode) {
+        // Close modal
+        const modal = document.querySelector('.success-modal');
+        if (modal) modal.remove();
+        
+        // Auto-fill tracker input
+        const orderIdInput = document.getElementById('orderIdInput');
+        if (orderIdInput) {
+            orderIdInput.value = orderCode;
+        }
+        
+        // Scroll to tracker section
+        const trackerSection = document.getElementById('tracker');
+        if (trackerSection) {
+            trackerSection.scrollIntoView({ behavior: 'smooth' });
+        }
+        
+        // Auto-track the order
         setTimeout(() => {
-            window.open(`https://wa.me/233246912468?text=${encodeURIComponent(adminMsg)}`, '_blank');
-        }, 1000);
+            if (window.orderTracker) {
+                window.orderTracker.trackOrder();
+            }
+        }, 500);
     }
 
-    sendCustomerMessage(orderCode) {
-        const orders = JSON.parse(localStorage.getItem('campusFixOrders') || '{}');
-        const order = orders[orderCode];
-        if (order) {
-            const msg = `Order ${orderCode} confirmation - CampusFix UENR`;
-            window.open(`https://wa.me/${order.customer_phone.replace(/\D/g, '')}?text=${encodeURIComponent(msg)}`, '_blank');
-        }
-    }
-
-    sendAdminMessage(orderCode) {
-        const orders = JSON.parse(localStorage.getItem('campusFixOrders') || '{}');
-        const order = orders[orderCode];
-        if (order) {
-            const msg = `New order: ${orderCode} - ${order.customer_name} - ${order.device_brand} ${order.device_model}`;
-            window.open(`https://wa.me/233246912468?text=${encodeURIComponent(msg)}`, '_blank');
-        }
+    closeModal() {
+        const modal = document.querySelector('.success-modal');
+        if (modal) modal.remove();
     }
 
     getCompletionTime(urgency) {
@@ -215,7 +205,7 @@ Device: ${order.device_brand} ${order.device_model}`;
         const btn = document.querySelector('#orderForm button[type="submit"]');
         if (btn) {
             btn.disabled = true;
-            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Creating...';
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Creating Order...';
         }
     }
 
@@ -235,4 +225,5 @@ Device: ${order.device_brand} ${order.device_model}`;
 // Initialize
 document.addEventListener('DOMContentLoaded', () => {
     window.orderGenerator = new OrderGenerator();
+    console.log('✅ Order Generator Initialized');
 });
