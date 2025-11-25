@@ -1,418 +1,316 @@
 // ================================
-// SIMPLIFIED ADMIN DASHBOARD
+// ADMIN DASHBOARD - COMPATIBLE VERSION
 // ================================
 
 class AdminDashboard {
     constructor() {
-        this.currentOrder = null;
-        this.checkAuth();
-        this.initializeDashboard();
-    }
-
-    checkAuth() {
         if (!localStorage.getItem('adminAuthenticated')) {
             window.location.href = 'admin-login.html';
             return;
         }
-    }
-
-    initializeDashboard() {
-        this.loadOrders();
-        this.setupEventListeners();
         
-        // Auto-refresh every 10 seconds
-        setInterval(() => {
-            this.loadOrders();
-        }, 10000);
+        this.init();
     }
 
-    setupEventListeners() {
-        const searchInput = document.getElementById('orderSearch');
-        if (searchInput) {
-            searchInput.addEventListener('input', (e) => {
-                this.filterOrders(e.target.value);
-            });
-        }
+    init() {
+        this.loadOrders();
+        this.setupAutoRefresh();
+        this.setupSearch();
     }
 
     loadOrders() {
         try {
-            // Load from localStorage (primary source)
-            const savedOrders = JSON.parse(localStorage.getItem('campusFixOrders') || '{}');
-            const ordersArray = Object.values(savedOrders).sort((a, b) => 
-                new Date(b.created_at) - new Date(a.created_at)
-            );
-
+            // DEBUG: Check storage
+            console.log('🛠️ ADMIN: Loading orders from localStorage...');
+            
+            const ordersJSON = localStorage.getItem('campusFixOrders');
+            console.log('🛠️ ADMIN: Raw localStorage data:', ordersJSON);
+            
+            const ordersObj = JSON.parse(ordersJSON || '{}');
+            const ordersArray = Object.values(ordersObj);
+            
+            console.log('🛠️ ADMIN: Found orders:', ordersArray);
+            
+            // Sort by date (newest first)
+            ordersArray.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+            
             this.displayOrders(ordersArray);
             this.updateStats(ordersArray);
-
+            
         } catch (error) {
-            console.error('Error loading orders:', error);
+            console.error('❌ ADMIN: Error loading orders:', error);
+            this.displayError('Failed to load orders: ' + error.message);
         }
     }
 
     displayOrders(orders) {
         const tbody = document.getElementById('ordersTableBody');
-        if (!tbody) return;
+        if (!tbody) {
+            console.error('❌ ADMIN: ordersTableBody not found!');
+            return;
+        }
 
         if (orders.length === 0) {
             tbody.innerHTML = `
                 <tr>
-                    <td colspan="7" style="text-align: center; padding: 40px; color: var(--gray-400);">
+                    <td colspan="7" style="text-align: center; padding: 40px; color: #94a3b8;">
                         <i class="fas fa-inbox" style="font-size: 2rem; margin-bottom: 10px; display: block;"></i>
-                        No orders yet. New orders will appear here automatically.
+                        No orders found. Orders will appear here when customers create them.
+                        <br><br>
+                        <button onclick="location.reload()" class="btn btn-outline">
+                            <i class="fas fa-sync-alt"></i> Refresh
+                        </button>
                     </td>
                 </tr>
             `;
             return;
         }
 
-        tbody.innerHTML = orders.map(order => {
-            const statusClass = order.status.toLowerCase().replace(/ /g, '-');
-            const createdDate = new Date(order.created_at).toLocaleDateString('en-GB', {
-                day: 'numeric',
-                month: 'short',
-                hour: '2-digit',
-                minute: '2-digit'
-            });
+        tbody.innerHTML = orders.map(order => `
+            <tr>
+                <td><strong>${order.order_code}</strong></td>
+                <td>${order.customer_name}</td>
+                <td>${order.device_brand} ${order.device_model}</td>
+                <td>${order.repair_type}</td>
+                <td>
+                    <span class="status-badge" style="
+                        background: ${this.getStatusColor(order.status)}; 
+                        color: white; 
+                        padding: 4px 12px; 
+                        border-radius: 20px; 
+                        font-size: 12px; 
+                        font-weight: 600;
+                    ">
+                        ${order.status}
+                    </span>
+                </td>
+                <td>${new Date(order.created_at).toLocaleDateString()}</td>
+                <td>
+                    <button class="btn btn-sm btn-outline" onclick="adminDashboard.viewOrder('${order.order_code}')">
+                        <i class="fas fa-eye"></i> View
+                    </button>
+                </td>
+            </tr>
+        `).join('');
 
-            return `
-                <tr>
-                    <td><strong>${order.order_code}</strong></td>
-                    <td>${order.customer_name}</td>
-                    <td>${order.device_brand} ${order.device_model}</td>
-                    <td>${order.repair_type}</td>
-                    <td><span class="status-badge status-${statusClass}">${order.status}</span></td>
-                    <td>${createdDate}</td>
-                    <td>
-                        <button class="btn btn-sm btn-outline" onclick="adminDashboard.viewOrder('${order.order_code}')">
-                            <i class="fas fa-eye"></i> View
-                        </button>
-                    </td>
-                </tr>
-            `;
-        }).join('');
+        console.log('✅ ADMIN: Displayed', orders.length, 'orders');
+    }
+
+    getStatusColor(status) {
+        const colors = {
+            'Order Received': '#f59e0b',
+            'Diagnosis Complete': '#3b82f6', 
+            'Repair In Progress': '#8b5cf6',
+            'Repair Complete': '#10b981',
+            'Ready for Pickup': '#059669'
+        };
+        return colors[status] || '#6b7280';
     }
 
     viewOrder(orderCode) {
-        const savedOrders = JSON.parse(localStorage.getItem('campusFixOrders') || '{}');
-        this.currentOrder = savedOrders[orderCode];
+        console.log('🛠️ ADMIN: Viewing order:', orderCode);
         
-        if (this.currentOrder) {
-            this.showOrderModal(this.currentOrder);
-        } else {
-            alert('Order not found!');
+        const orders = JSON.parse(localStorage.getItem('campusFixOrders') || '{}');
+        const order = orders[orderCode];
+        
+        if (!order) {
+            alert('Order not found: ' + orderCode);
+            return;
         }
+
+        this.showOrderModal(order);
     }
 
     showOrderModal(order) {
-        // Create or update modal
-        let modal = document.getElementById('orderModal');
-        if (!modal) {
-            modal = document.createElement('div');
-            modal.id = 'orderModal';
-            modal.className = 'modal';
-            modal.innerHTML = `
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h3>Order Details - <span id="modalOrderCode"></span></h3>
-                        <button class="close-btn" onclick="closeModal()">&times;</button>
+        // Create modal HTML
+        const modalHTML = `
+            <div id="orderModal" style="
+                position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+                background: rgba(0,0,0,0.8); z-index: 1000; display: flex; 
+                align-items: center; justify-content: center;
+            ">
+                <div style="
+                    background: #1e293b; border-radius: 15px; padding: 0; 
+                    max-width: 800px; width: 90%; max-height: 90vh; overflow-y: auto;
+                ">
+                    <div style="padding: 20px; border-bottom: 1px solid #334155; display: flex; justify-content: between; align-items: center;">
+                        <h3 style="margin: 0;">Order: ${order.order_code}</h3>
+                        <button onclick="document.getElementById('orderModal').remove()" style="background: none; border: none; color: #94a3b8; font-size: 1.5rem; cursor: pointer;">&times;</button>
                     </div>
-                    <div class="modal-body">
-                        <div class="order-details-grid">
-                            <div class="detail-group">
-                                <h4>Customer Information</h4>
-                                <p><strong>Name:</strong> <span id="detailCustomerName"></span></p>
-                                <p><strong>Phone:</strong> <span id="detailCustomerPhone"></span></p>
-                                <p><strong>Hostel:</strong> <span id="detailCustomerHostel"></span></p>
-                            </div>
-                            <div class="detail-group">
-                                <h4>Device Information</h4>
-                                <p><strong>Device:</strong> <span id="detailDevice"></span></p>
-                                <p><strong>Repair:</strong> <span id="detailRepair"></span></p>
-                                <p><strong>Issue:</strong> <span id="detailIssue"></span></p>
+                    
+                    <div style="padding: 20px;">
+                        <!-- Customer Info -->
+                        <div style="margin-bottom: 25px;">
+                            <h4 style="color: #6366f1; margin-bottom: 15px;">Customer Information</h4>
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                                <div><strong>Name:</strong> ${order.customer_name}</div>
+                                <div><strong>Phone:</strong> ${order.customer_phone}</div>
+                                <div><strong>Hostel:</strong> ${order.customer_hostel}</div>
+                                <div><strong>Email:</strong> ${order.customer_email || 'Not provided'}</div>
                             </div>
                         </div>
-
-                        <div class="status-update-section">
-                            <h4>Update Repair Status</h4>
-                            <div class="status-buttons" id="statusButtons">
-                                <!-- Buttons will be added dynamically -->
+                        
+                        <!-- Device Info -->
+                        <div style="margin-bottom: 25px;">
+                            <h4 style="color: #6366f1; margin-bottom: 15px;">Device Information</h4>
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                                <div><strong>Device:</strong> ${order.device_brand} ${order.device_model}</div>
+                                <div><strong>Repair:</strong> ${order.repair_type}</div>
+                                <div><strong>Urgency:</strong> ${order.urgency_level}</div>
+                                <div><strong>Status:</strong> ${order.status}</div>
                             </div>
                         </div>
-
-                        <div class="progress-timeline">
-                            <h4>Repair Progress</h4>
-                            <div id="progressTimeline"></div>
-                        </div>
-
-                        <div class="quick-actions">
-                            <h4>Quick Actions</h4>
-                            <div class="action-buttons">
-                                <button class="btn btn-secondary" onclick="contactCustomer()">
-                                    <i class="fab fa-whatsapp"></i> Contact Customer
-                                </button>
+                        
+                        <!-- Issue -->
+                        <div style="margin-bottom: 25px;">
+                            <h4 style="color: #6366f1; margin-bottom: 15px;">Issue Description</h4>
+                            <div style="background: rgba(255,255,255,0.05); padding: 15px; border-radius: 8px;">
+                                ${order.issue_description}
                             </div>
+                        </div>
+                        
+                        <!-- Status Update -->
+                        <div style="margin-bottom: 25px;">
+                            <h4 style="color: #6366f1; margin-bottom: 15px;">Update Status</h4>
+                            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px;">
+                                ${this.getStatusButtons(order.status)}
+                            </div>
+                        </div>
+                        
+                        <!-- Quick Actions -->
+                        <div>
+                            <h4 style="color: #6366f1; margin-bottom: 15px;">Quick Actions</h4>
+                            <button onclick="adminDashboard.contactCustomer('${order.order_code}')" class="btn btn-primary">
+                                <i class="fab fa-whatsapp"></i> Contact Customer
+                            </button>
                         </div>
                     </div>
-                </div>
-            `;
-            document.body.appendChild(modal);
-        }
-
-        // Update modal content
-        document.getElementById('modalOrderCode').textContent = order.order_code;
-        document.getElementById('detailCustomerName').textContent = order.customer_name;
-        document.getElementById('detailCustomerPhone').textContent = order.customer_phone;
-        document.getElementById('detailCustomerHostel').textContent = order.customer_hostel;
-        document.getElementById('detailDevice').textContent = `${order.device_brand} ${order.device_model}`;
-        document.getElementById('detailRepair').textContent = order.repair_type;
-        document.getElementById('detailIssue').textContent = order.issue_description;
-
-        this.updateProgressTimeline(order);
-        this.updateActionButtons(order.status);
-        
-        modal.style.display = 'block';
-    }
-
-    updateActionButtons(currentStatus) {
-        const statusButtons = document.getElementById('statusButtons');
-        if (!statusButtons) return;
-
-        let buttonsHTML = '';
-
-        if (currentStatus === 'Order Received') {
-            buttonsHTML = `
-                <button class="btn btn-primary" onclick="updateOrderStatus('diagnosis_complete')">
-                    <i class="fas fa-search"></i> Diagnosis Complete
-                </button>
-            `;
-        } else if (currentStatus === 'Diagnosis Complete') {
-            buttonsHTML = `
-                <button class="btn btn-primary" onclick="updateOrderStatus('repair_started')">
-                    <i class="fas fa-tools"></i> Start Repair
-                </button>
-            `;
-        } else if (currentStatus === 'Repair In Progress') {
-            buttonsHTML = `
-                <button class="btn btn-primary" onclick="updateOrderStatus('repair_complete')">
-                    <i class="fas fa-check"></i> Repair Complete
-                </button>
-            `;
-        } else if (currentStatus === 'Repair Complete') {
-            buttonsHTML = `
-                <button class="btn btn-primary" onclick="updateOrderStatus('ready_pickup')">
-                    <i class="fas fa-box"></i> Ready for Pickup
-                </button>
-            `;
-        } else {
-            buttonsHTML = `
-                <button class="btn btn-outline" disabled>
-                    <i class="fas fa-check-circle"></i> Order Completed
-                </button>
-            `;
-        }
-
-        statusButtons.innerHTML = buttonsHTML;
-    }
-
-    updateProgressTimeline(order) {
-        const timeline = document.getElementById('progressTimeline');
-        if (!timeline) return;
-
-        const steps = order.steps || {};
-
-        const timelineSteps = [
-            { name: 'Order Received', time: steps.received || 'Pending', completed: true },
-            { name: 'Diagnosis', time: steps.diagnosis || 'Pending', completed: steps.diagnosis && steps.diagnosis !== 'Pending' },
-            { name: 'Repair', time: steps.repair || 'Pending', completed: steps.repair && steps.repair !== 'Pending' },
-            { name: 'Quality Check', time: steps.quality || 'Pending', completed: steps.quality && steps.quality !== 'Pending' },
-            { name: 'Ready for Pickup', time: steps.ready || 'Pending', completed: steps.ready && steps.ready !== 'Pending' }
-        ];
-
-        timeline.innerHTML = timelineSteps.map(step => `
-            <div class="timeline-step ${step.completed ? 'completed' : ''}">
-                <div class="timeline-marker"></div>
-                <div class="timeline-content">
-                    <strong>${step.name}</strong>
-                    <span>${step.time}</span>
                 </div>
             </div>
-        `).join('');
+        `;
+
+        // Remove existing modal and add new one
+        const existingModal = document.getElementById('orderModal');
+        if (existingModal) existingModal.remove();
+        
+        document.body.insertAdjacentHTML('beforeend', modalHTML);
     }
 
-    async updateOrderStatus(action) {
-        if (!this.currentOrder) return;
+    getStatusButtons(currentStatus) {
+        const buttons = {
+            'Order Received': '<button onclick="adminDashboard.updateStatus(\'diagnosis_complete\')" class="btn btn-primary">Diagnosis Complete</button>',
+            'Diagnosis Complete': '<button onclick="adminDashboard.updateStatus(\'repair_started\')" class="btn btn-primary">Start Repair</button>',
+            'Repair In Progress': '<button onclick="adminDashboard.updateStatus(\'repair_complete\')" class="btn btn-primary">Repair Complete</button>',
+            'Repair Complete': '<button onclick="adminDashboard.updateStatus(\'ready_pickup\')" class="btn btn-primary">Ready for Pickup</button>'
+        };
+        
+        return buttons[currentStatus] || '<button disabled class="btn btn-outline">Completed</button>';
+    }
 
-        try {
-            const orderCode = this.currentOrder.order_code;
-            const savedOrders = JSON.parse(localStorage.getItem('campusFixOrders') || '{}');
-            const order = savedOrders[orderCode];
+    updateStatus(action) {
+        const modal = document.getElementById('orderModal');
+        const orderCode = modal.querySelector('h3').textContent.replace('Order: ', '');
+        
+        console.log('🛠️ ADMIN: Updating status:', orderCode, action);
+        
+        const orders = JSON.parse(localStorage.getItem('campusFixOrders') || '{}');
+        const order = orders[orderCode];
+        
+        if (!order) {
+            alert('Order not found!');
+            return;
+        }
 
-            if (!order) return;
+        // Update status based on action
+        const statusMap = {
+            'diagnosis_complete': { status: 'Diagnosis Complete', progress: 30 },
+            'repair_started': { status: 'Repair In Progress', progress: 50 },
+            'repair_complete': { status: 'Repair Complete', progress: 80 },
+            'ready_pickup': { status: 'Ready for Pickup', progress: 100 }
+        };
 
-            const now = new Date();
-            const timeString = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
-
-            // Update order status
-            switch (action) {
-                case 'diagnosis_complete':
-                    order.status = 'Diagnosis Complete';
-                    order.progress = 30;
-                    order.steps.diagnosis = timeString;
-                    order.steps.repair = 'Next';
-                    this.addOrderUpdate(order, 'Diagnosis completed - ready for repair', timeString);
-                    break;
-
-                case 'repair_started':
-                    order.status = 'Repair In Progress';
-                    order.progress = 50;
-                    order.steps.repair = 'In Progress';
-                    this.addOrderUpdate(order, 'Repair work started', timeString);
-                    break;
-
-                case 'repair_complete':
-                    order.status = 'Repair Complete';
-                    order.progress = 80;
-                    order.steps.repair = timeString;
-                    order.steps.quality = 'In Progress';
-                    this.addOrderUpdate(order, 'Repair completed - quality check in progress', timeString);
-                    break;
-
-                case 'ready_pickup':
-                    order.status = 'Ready for Pickup';
-                    order.progress = 100;
-                    order.steps.quality = timeString;
-                    order.steps.ready = 'Ready Now';
-                    this.addOrderUpdate(order, 'Repair completed and ready for pickup!', timeString);
-                    break;
-            }
-
-            order.updated_at = now.toISOString();
-            savedOrders[orderCode] = order;
-            localStorage.setItem('campusFixOrders', JSON.stringify(savedOrders));
-
-            // Send WhatsApp update to customer
-            this.sendStatusUpdateToCustomer(order, action);
-
-            // Update UI
-            this.updateProgressTimeline(order);
-            this.updateActionButtons(order.status);
+        const update = statusMap[action];
+        if (update) {
+            order.status = update.status;
+            order.progress = update.progress;
+            order.updated_at = new Date().toISOString();
+            
+            // Save updated order
+            orders[orderCode] = order;
+            localStorage.setItem('campusFixOrders', JSON.stringify(orders));
+            
+            // Reload orders
             this.loadOrders();
             
-            alert('Status updated successfully! Customer notified via WhatsApp.');
-
-        } catch (error) {
-            console.error('Error updating order:', error);
-            alert('Failed to update order. Please try again.');
+            // Close modal
+            modal.remove();
+            
+            alert(`✅ Status updated to: ${update.status}`);
         }
     }
 
-    addOrderUpdate(order, message, time) {
-        if (!order.updates) order.updates = [];
+    contactCustomer(orderCode) {
+        const orders = JSON.parse(localStorage.getItem('campusFixOrders') || '{}');
+        const order = orders[orderCode];
         
-        order.updates.push({
-            icon: 'fas fa-info-circle',
-            color: 'text-blue-400',
-            bgColor: 'bg-blue-400/10',
-            message: message,
-            time: time
-        });
-    }
-
-    sendStatusUpdateToCustomer(order, action) {
-        let message = '';
-        
-        switch (action) {
-            case 'diagnosis_complete':
-                message = `🔍 *Diagnosis Complete - CampusFix UENR*
-
-📦 Order: ${order.order_code}
-✅ Diagnosis completed successfully
-🔧 Ready to begin repair
-
-We'll start the repair process now.`;
-                break;
-
-            case 'repair_started':
-                message = `🛠️ *Repair Started - CampusFix UENR*
-
-📦 Order: ${order.order_code}
-🔧 Repair work has begun on your ${order.device_brand} ${order.device_model}
-⏰ Making good progress`;
-                break;
-
-            case 'ready_pickup':
-                message = `🎉 *Ready for Pickup! - CampusFix UENR*
-
-📦 Order: ${order.order_code}
-✅ Your ${order.device_brand} ${order.device_model} is ready for pickup!
-🏠 Free delivery available
-
-💬 Contact me for delivery: https://wa.me/233246912468`;
-                break;
-        }
-
-        if (message) {
-            const url = `https://wa.me/${order.customer_phone.replace(/\D/g, '')}?text=${encodeURIComponent(message)}`;
+        if (order) {
+            const url = `https://wa.me/${order.customer_phone.replace(/\D/g, '')}`;
             window.open(url, '_blank');
         }
     }
 
     updateStats(orders) {
         const pending = orders.filter(o => o.status === 'Order Received').length;
-        const inProgress = orders.filter(o => 
-            o.status.includes('Progress') || 
-            o.status === 'Diagnosis Complete' ||
-            o.status === 'Repair Complete'
-        ).length;
+        const inProgress = orders.filter(o => o.status.includes('Progress') || o.status === 'Diagnosis Complete').length;
         const completed = orders.filter(o => o.status === 'Ready for Pickup').length;
 
-        // Update DOM elements if they exist
-        if (document.getElementById('pendingCount')) {
-            document.getElementById('pendingCount').textContent = pending;
-            document.getElementById('progressCount').textContent = inProgress;
-            document.getElementById('completedCount').textContent = completed;
-            document.getElementById('revenueCount').textContent = `GH₵ ${completed * 150}`;
+        // Update DOM if elements exist
+        ['pendingCount', 'progressCount', 'completedCount'].forEach((id, index) => {
+            const element = document.getElementById(id);
+            if (element) {
+                const values = [pending, inProgress, completed];
+                element.textContent = values[index];
+            }
+        });
+    }
+
+    setupAutoRefresh() {
+        setInterval(() => {
+            this.loadOrders();
+        }, 5000); // Refresh every 5 seconds
+    }
+
+    setupSearch() {
+        const searchInput = document.getElementById('orderSearch');
+        if (searchInput) {
+            searchInput.addEventListener('input', (e) => {
+                const searchTerm = e.target.value.toLowerCase();
+                const rows = document.querySelectorAll('#ordersTableBody tr');
+                
+                rows.forEach(row => {
+                    const text = row.textContent.toLowerCase();
+                    row.style.display = text.includes(searchTerm) ? '' : 'none';
+                });
+            });
         }
     }
 
-    filterOrders(searchTerm) {
+    displayError(message) {
         const tbody = document.getElementById('ordersTableBody');
-        const rows = tbody.getElementsByTagName('tr');
-        
-        for (let row of rows) {
-            const text = row.textContent.toLowerCase();
-            row.style.display = text.includes(searchTerm.toLowerCase()) ? '' : 'none';
+        if (tbody) {
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="7" style="text-align: center; padding: 40px; color: #ef4444;">
+                        <i class="fas fa-exclamation-triangle" style="font-size: 2rem; margin-bottom: 10px; display: block;"></i>
+                        ${message}
+                    </td>
+                </tr>
+            `;
         }
     }
 }
 
-// Global functions
-function closeModal() {
-    const modal = document.getElementById('orderModal');
-    if (modal) modal.style.display = 'none';
-}
-
-function logout() {
-    localStorage.removeItem('adminAuthenticated');
-    window.location.href = 'admin-login.html';
-}
-
-function updateOrderStatus(action) {
-    if (window.adminDashboard) {
-        window.adminDashboard.updateOrderStatus(action);
-    }
-}
-
-function contactCustomer() {
-    if (window.adminDashboard && window.adminDashboard.currentOrder) {
-        const url = `https://wa.me/${window.adminDashboard.currentOrder.customer_phone.replace(/\D/g, '')}`;
-        window.open(url, '_blank');
-    }
-}
-
-// Initialize dashboard
+// Initialize
 document.addEventListener('DOMContentLoaded', () => {
     window.adminDashboard = new AdminDashboard();
 });
