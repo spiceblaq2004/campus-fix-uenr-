@@ -5,6 +5,7 @@
 class OrderGenerator {
     constructor() {
         this.orderCounter = this.loadOrderCounter();
+        this.currentOrder = null;
         this.initializeEventListeners();
         this.setupFormValidation();
     }
@@ -263,6 +264,7 @@ class OrderGenerator {
             
             // Generate order
             const order = await this.createOrder(formData);
+            this.currentOrder = order; // Store the current order
             
             // Show success with WhatsApp sending
             await this.showOrderSuccess(order);
@@ -418,16 +420,16 @@ class OrderGenerator {
                 <div class="manual-send-buttons">
                     <p>If WhatsApp doesn't open automatically, click below:</p>
                     <div class="send-buttons-container">
-                        <button class="btn btn-primary" onclick="window.orderGenerator.sendCustomerMessage('${order.order_code}')">
+                        <button class="btn btn-primary" id="sendToCustomerBtn">
                             <i class="fab fa-whatsapp"></i> Send to Customer
                         </button>
-                        <button class="btn btn-secondary" onclick="window.orderGenerator.sendAdminMessage('${order.order_code}')">
+                        <button class="btn btn-secondary" id="sendToAdminBtn">
                             <i class="fab fa-whatsapp"></i> Send to Admin
                         </button>
                     </div>
                 </div>
                 <div style="margin-top: 20px;">
-                    <button class="btn btn-outline" onclick="window.orderGenerator.closeSuccessModal()">
+                    <button class="btn btn-outline" id="closeModalBtn">
                         Close
                     </button>
                 </div>
@@ -435,16 +437,59 @@ class OrderGenerator {
         `;
         document.body.appendChild(modal);
 
+        // Add event listeners to the buttons
+        this.setupModalEventListeners(order);
+
         // Auto-close after 30 seconds
         setTimeout(() => {
             this.closeSuccessModal();
         }, 30000);
     }
 
+    setupModalEventListeners(order) {
+        // Send to Customer button
+        const sendToCustomerBtn = document.getElementById('sendToCustomerBtn');
+        if (sendToCustomerBtn) {
+            sendToCustomerBtn.addEventListener('click', () => {
+                this.sendCustomerMessage(order.order_code);
+            });
+        }
+
+        // Send to Admin button
+        const sendToAdminBtn = document.getElementById('sendToAdminBtn');
+        if (sendToAdminBtn) {
+            sendToAdminBtn.addEventListener('click', () => {
+                this.sendAdminMessage(order.order_code);
+            });
+        }
+
+        // Close button
+        const closeModalBtn = document.getElementById('closeModalBtn');
+        if (closeModalBtn) {
+            closeModalBtn.addEventListener('click', () => {
+                this.closeSuccessModal();
+            });
+        }
+    }
+
     closeSuccessModal() {
         const modal = document.querySelector('.success-modal');
         if (modal) {
             modal.remove();
+        }
+        
+        // Also scroll to tracker and auto-fill the order code
+        if (this.currentOrder) {
+            const orderIdInput = document.getElementById('orderIdInput');
+            if (orderIdInput) {
+                orderIdInput.value = this.currentOrder.order_code;
+            }
+            
+            // Scroll to tracker section
+            const trackerSection = document.getElementById('tracker');
+            if (trackerSection) {
+                trackerSection.scrollIntoView({ behavior: 'smooth' });
+            }
         }
     }
 
@@ -455,7 +500,8 @@ class OrderGenerator {
             const adminMessage = this.generateAdminMessage(order);
             
             // Create WhatsApp URLs
-            const customerUrl = `https://wa.me/${order.customerPhone ? order.customerPhone.replace(/\D/g, '') : order.customer_phone.replace(/\D/g, '')}?text=${encodeURIComponent(customerMessage)}`;
+            const customerPhone = order.customerPhone || order.customer_phone;
+            const customerUrl = `https://wa.me/${customerPhone.replace(/\D/g, '')}?text=${encodeURIComponent(customerMessage)}`;
             const adminUrl = `https://wa.me/233246912468?text=${encodeURIComponent(adminMessage)}`;
             
             // Send customer message immediately
@@ -497,6 +543,8 @@ class OrderGenerator {
             const phone = order.customerPhone || order.customer_phone;
             const url = `https://wa.me/${phone.replace(/\D/g, '')}?text=${encodeURIComponent(message)}`;
             window.open(url, '_blank');
+        } else {
+            this.showNotification('Order not found!', 'error');
         }
     }
 
@@ -518,6 +566,8 @@ class OrderGenerator {
             const message = this.generateAdminMessage(order);
             const url = `https://wa.me/233246912468?text=${encodeURIComponent(message)}`;
             window.open(url, '_blank');
+        } else {
+            this.showNotification('Order not found!', 'error');
         }
     }
 
@@ -663,3 +713,22 @@ ${issueDescription}
 document.addEventListener('DOMContentLoaded', () => {
     window.orderGenerator = new OrderGenerator();
 });
+
+// Global functions for backward compatibility
+window.sendCustomerMessage = function(orderCode) {
+    if (window.orderGenerator) {
+        window.orderGenerator.sendCustomerMessage(orderCode);
+    }
+};
+
+window.sendAdminMessage = function(orderCode) {
+    if (window.orderGenerator) {
+        window.orderGenerator.sendAdminMessage(orderCode);
+    }
+};
+
+window.closeSuccessModal = function() {
+    if (window.orderGenerator) {
+        window.orderGenerator.closeSuccessModal();
+    }
+};
