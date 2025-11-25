@@ -1,13 +1,11 @@
 // ================================
-// ENHANCED ORDER GENERATOR - FIXED VERSION
+// ORDER GENERATOR - COMPATIBLE VERSION
 // ================================
 
 class OrderGenerator {
     constructor() {
         this.orderCounter = this.loadOrderCounter();
-        this.currentOrder = null;
         this.initializeEventListeners();
-        this.setupFormValidation();
     }
 
     initializeEventListeners() {
@@ -18,44 +16,35 @@ class OrderGenerator {
                 this.handleOrderSubmission();
             });
         }
-        this.setupRealTimeValidation();
-        this.setupPreviewUpdates();
-    }
-
-    setupFormValidation() {
-        const style = document.createElement('style');
-        style.textContent = `
-            .form-group.error input { border-color: #ef4444 !important; }
-            .success-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.8); display: flex; align-items: center; justify-content: center; z-index: 10000; }
-            .success-content { background: var(--gray-800); border-radius: 20px; padding: 30px; max-width: 500px; width: 90%; text-align: center; }
-        `;
-        document.head.appendChild(style);
     }
 
     async handleOrderSubmission() {
-        if (!this.validateAllFields()) {
-            alert('Please fix the form errors');
+        const formData = this.getFormData();
+        
+        // Basic validation
+        if (!formData.customerName || !formData.customerPhone) {
+            alert('Please fill in required fields');
             return;
         }
 
-        const formData = this.getFormData();
-        
         try {
             this.showLoading();
             
-            // Create order - SIMPLIFIED: Use localStorage only for now
-            const order = this.createLocalOrder(formData);
-            this.currentOrder = order;
+            // Create order
+            const order = this.createOrder(formData);
             
-            // Show success modal
-            this.showSuccessModal(order);
+            // Save to storage
+            this.saveOrder(order);
             
-            // Send WhatsApp messages
-            await this.sendWhatsAppMessages(order);
+            // Show success
+            this.showSuccess(order);
+            
+            // Send WhatsApp
+            this.sendWhatsAppMessages(order);
             
         } catch (error) {
-            console.error('Order creation failed:', error);
-            alert('Failed to create order. Please try again.');
+            console.error('Error:', error);
+            alert('Error creating order');
         } finally {
             this.hideLoading();
         }
@@ -75,13 +64,14 @@ class OrderGenerator {
         };
     }
 
-    createLocalOrder(formData) {
+    createOrder(formData) {
         this.orderCounter++;
-        this.saveOrderCounter();
+        localStorage.setItem('campusFixOrderCounter', this.orderCounter);
         
         const orderCode = `CF-${new Date().getFullYear()}-${this.orderCounter.toString().padStart(4, '0')}`;
         
-        const order = {
+        return {
+            // STANDARDIZED PROPERTY NAMES - Admin dashboard expects these
             id: Date.now().toString(),
             order_code: orderCode,
             customer_name: formData.customerName,
@@ -97,7 +87,7 @@ class OrderGenerator {
             progress: 10,
             created_at: new Date().toISOString(),
             updated_at: new Date().toISOString(),
-            estimated_completion: this.calculateCompletionTime(formData.urgencyLevel),
+            estimated_completion: this.getCompletionTime(formData.urgencyLevel),
             steps: {
                 received: new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }),
                 diagnosis: 'Pending',
@@ -107,9 +97,6 @@ class OrderGenerator {
             },
             updates: [
                 {
-                    icon: 'fas fa-clipboard-check',
-                    color: 'text-green-400',
-                    bgColor: 'bg-green-400/10',
                     message: 'Order received and queued for diagnosis',
                     time: new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })
                 }
@@ -119,192 +106,116 @@ class OrderGenerator {
                 role: 'Founder & Repair Specialist'
             }
         };
-        
-        this.saveOrderToStorage(order);
-        return order;
     }
 
-    saveOrderToStorage(order) {
-        // Save to localStorage
-        const savedOrders = JSON.parse(localStorage.getItem('campusFixOrders') || '{}');
-        savedOrders[order.order_code] = order;
-        localStorage.setItem('campusFixOrders', JSON.stringify(savedOrders));
+    saveOrder(order) {
+        // Get existing orders
+        const existingOrders = JSON.parse(localStorage.getItem('campusFixOrders') || '{}');
         
-        // Try to save to JSONBin if available
-        if (window.jsonbinBackend) {
-            setTimeout(async () => {
-                try {
-                    await window.jsonbinBackend.createOrder(order);
-                    console.log('Order saved to JSONBin');
-                } catch (error) {
-                    console.warn('JSONBin save failed:', error);
-                }
-            }, 1000);
-        }
+        // Add new order
+        existingOrders[order.order_code] = order;
+        
+        // Save back to localStorage
+        localStorage.setItem('campusFixOrders', JSON.stringify(existingOrders));
+        
+        // DEBUG: Verify save
+        console.log('💾 ORDER SAVED:', {
+            code: order.order_code,
+            allOrders: Object.keys(existingOrders),
+            storageKey: 'campusFixOrders'
+        });
     }
 
-    showSuccessModal(order) {
+    showSuccess(order) {
         const modal = document.createElement('div');
-        modal.className = 'success-modal';
+        modal.style.cssText = `
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+            background: rgba(0,0,0,0.8); display: flex; align-items: center; 
+            justify-content: center; z-index: 10000;
+        `;
+        
         modal.innerHTML = `
-            <div class="success-content">
+            <div style="background: #1e293b; padding: 30px; border-radius: 15px; text-align: center; max-width: 500px; width: 90%;">
                 <div style="color: #10b981; font-size: 3rem; margin-bottom: 15px;">
                     <i class="fas fa-check-circle"></i>
                 </div>
-                <h3>Order Created Successfully! 🎉</h3>
+                <h3 style="margin-bottom: 15px;">Order Created! 🎉</h3>
                 <p><strong>Order Code:</strong> ${order.order_code}</p>
-                <p>Check your WhatsApp for confirmation messages...</p>
-                <div style="background: rgba(99, 102, 241, 0.1); border-radius: 12px; padding: 20px; margin: 20px 0;">
-                    <p style="margin-bottom: 15px; color: var(--gray-300);">If WhatsApp didn't open automatically:</p>
-                    <div style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
-                        <button class="btn btn-primary" id="sendToCustomerBtn">
-                            <i class="fab fa-whatsapp"></i> Send to Customer
-                        </button>
-                        <button class="btn btn-secondary" id="sendToAdminBtn">
-                            <i class="fab fa-whatsapp"></i> Send to Admin
-                        </button>
-                    </div>
+                <p style="margin: 20px 0; color: #94a3b8;">Check your WhatsApp for confirmation...</p>
+                
+                <div style="background: rgba(99, 102, 241, 0.1); padding: 15px; border-radius: 10px; margin: 15px 0;">
+                    <button onclick="window.orderGenerator.sendCustomerMessage('${order.order_code}')" 
+                            style="background: #6366f1; color: white; border: none; padding: 12px 20px; border-radius: 8px; margin: 5px; cursor: pointer;">
+                        <i class="fab fa-whatsapp"></i> Send to Customer
+                    </button>
+                    <button onclick="window.orderGenerator.sendAdminMessage('${order.order_code}')" 
+                            style="background: #475569; color: white; border: none; padding: 12px 20px; border-radius: 8px; margin: 5px; cursor: pointer;">
+                        <i class="fab fa-whatsapp"></i> Send to Admin
+                    </button>
                 </div>
-                <button class="btn btn-outline" id="closeModalBtn">
+                
+                <button onclick="this.closest('.success-modal').remove(); document.getElementById('orderIdInput').value='${order.order_code}'; document.getElementById('tracker').scrollIntoView();" 
+                        style="background: transparent; color: #6366f1; border: 2px solid #6366f1; padding: 10px 20px; border-radius: 8px; margin-top: 10px; cursor: pointer;">
                     Close & Track Order
                 </button>
             </div>
         `;
+        
+        modal.className = 'success-modal';
         document.body.appendChild(modal);
-
-        // Add event listeners
-        document.getElementById('sendToCustomerBtn').addEventListener('click', () => {
-            this.sendCustomerMessage(order.order_code);
-        });
-        
-        document.getElementById('sendToAdminBtn').addEventListener('click', () => {
-            this.sendAdminMessage(order.order_code);
-        });
-        
-        document.getElementById('closeModalBtn').addEventListener('click', () => {
-            this.closeSuccessModal();
-        });
     }
 
-    closeSuccessModal() {
-        const modal = document.querySelector('.success-modal');
-        if (modal) modal.remove();
-        
-        // Auto-fill tracker and scroll to it
-        if (this.currentOrder) {
-            const orderIdInput = document.getElementById('orderIdInput');
-            if (orderIdInput) {
-                orderIdInput.value = this.currentOrder.order_code;
-            }
-            document.getElementById('tracker')?.scrollIntoView({ behavior: 'smooth' });
-        }
+    sendWhatsAppMessages(order) {
+        const customerMsg = `✅ *CampusFix UENR - Order Confirmation*
+
+📦 Order: ${order.order_code}
+👤 Customer: ${order.customer_name}
+📱 Device: ${order.device_brand} ${order.device_model}
+🔧 Repair: ${order.repair_type}
+
+I'll contact you within 30 minutes!`;
+
+        const adminMsg = `🆕 *NEW ORDER - ${order.order_code}*
+Customer: ${order.customer_name}
+Phone: ${order.customer_phone}
+Device: ${order.device_brand} ${order.device_model}`;
+
+        // Open WhatsApp
+        window.open(`https://wa.me/${order.customer_phone.replace(/\D/g, '')}?text=${encodeURIComponent(customerMsg)}`, '_blank');
+        setTimeout(() => {
+            window.open(`https://wa.me/233246912468?text=${encodeURIComponent(adminMsg)}`, '_blank');
+        }, 1000);
     }
 
-    async sendWhatsAppMessages(order) {
-        try {
-            const customerMessage = this.generateCustomerMessage(order);
-            const adminMessage = this.generateAdminMessage(order);
-            
-            const customerUrl = `https://wa.me/${order.customer_phone.replace(/\D/g, '')}?text=${encodeURIComponent(customerMessage)}`;
-            const adminUrl = `https://wa.me/233246912468?text=${encodeURIComponent(adminMessage)}`;
-            
-            // Open customer WhatsApp
-            window.open(customerUrl, '_blank');
-            
-            // Open admin WhatsApp after delay
-            setTimeout(() => {
-                window.open(adminUrl, '_blank');
-            }, 1000);
-            
-        } catch (error) {
-            console.error('WhatsApp error:', error);
-        }
-    }
-
-    async sendCustomerMessage(orderCode) {
-        const savedOrders = JSON.parse(localStorage.getItem('campusFixOrders') || '{}');
-        const order = savedOrders[orderCode];
-        
+    sendCustomerMessage(orderCode) {
+        const orders = JSON.parse(localStorage.getItem('campusFixOrders') || '{}');
+        const order = orders[orderCode];
         if (order) {
-            const message = this.generateCustomerMessage(order);
-            const url = `https://wa.me/${order.customer_phone.replace(/\D/g, '')}?text=${encodeURIComponent(message)}`;
-            window.open(url, '_blank');
-        } else {
-            alert('Order not found!');
+            const msg = `Order ${orderCode} confirmation - CampusFix UENR`;
+            window.open(`https://wa.me/${order.customer_phone.replace(/\D/g, '')}?text=${encodeURIComponent(msg)}`, '_blank');
         }
     }
 
-    async sendAdminMessage(orderCode) {
-        const savedOrders = JSON.parse(localStorage.getItem('campusFixOrders') || '{}');
-        const order = savedOrders[orderCode];
-        
+    sendAdminMessage(orderCode) {
+        const orders = JSON.parse(localStorage.getItem('campusFixOrders') || '{}');
+        const order = orders[orderCode];
         if (order) {
-            const message = this.generateAdminMessage(order);
-            const url = `https://wa.me/233246912468?text=${encodeURIComponent(message)}`;
-            window.open(url, '_blank');
-        } else {
-            alert('Order not found!');
+            const msg = `New order: ${orderCode} - ${order.customer_name} - ${order.device_brand} ${order.device_model}`;
+            window.open(`https://wa.me/233246912468?text=${encodeURIComponent(msg)}`, '_blank');
         }
     }
 
-    generateCustomerMessage(order) {
-        return `✅ *CampusFix UENR - Order Confirmation*
-
-📦 *Order Code:* ${order.order_code}
-👤 *Customer:* ${order.customer_name}
-📱 *Device:* ${order.device_brand} ${order.device_model}
-🔧 *Repair:* ${order.repair_type}
-⚡ *Urgency:* ${order.urgency_level}
-🏠 *Hostel:* ${order.customer_hostel}
-
-👨‍💼 *Repair Technician:* Abdul Latif Bright (Spice BlaQ)
-
-📋 *Next Steps:*
-1. I'll contact you within 30 minutes
-2. Free hostel pickup will be arranged
-3. Track progress using code: ${order.order_code}
-
-⏰ *Estimated Completion:* ${new Date(order.estimated_completion).toLocaleDateString('en-GB', { 
-    weekday: 'short', 
-    day: 'numeric', 
-    month: 'short',
-    hour: '2-digit',
-    minute: '2-digit'
-})}
-
-💬 *Direct Contact:* https://wa.me/233246912468
-📞 *Call:* 0246912468
-
-– CampusFix UENR 🛠️`;
+    getCompletionTime(urgency) {
+        const now = new Date();
+        const hours = urgency === 'Emergency' ? 6 : urgency === 'Express' ? 24 : 72;
+        return new Date(now.getTime() + hours * 60 * 60 * 1000).toISOString();
     }
 
-    generateAdminMessage(order) {
-        return `🆕 *NEW REPAIR ORDER - CampusFix*
-
-📦 *Order Code:* ${order.order_code}
-👤 *Customer:* ${order.customer_name}
-📞 *Phone:* ${order.customer_phone}
-📱 *Device:* ${order.device_brand} ${order.device_model}
-🔧 *Repair:* ${order.repair_type}
-⚡ *Urgency:* ${order.urgency_level}
-🏠 *Hostel:* ${order.customer_hostel}
-
-📝 *Issue Description:*
-${order.issue_description}
-
-⏰ *Estimated Completion:* ${new Date(order.estimated_completion).toLocaleDateString('en-GB')}
-
-💬 *Contact Customer:* https://wa.me/${order.customer_phone.replace(/\D/g, '')}
-
-– New order received! Time to work your magic Spice! 💪`;
-    }
-
-    // Utility methods
     showLoading() {
         const btn = document.querySelector('#orderForm button[type="submit"]');
         if (btn) {
             btn.disabled = true;
-            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Creating Order...';
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Creating...';
         }
     }
 
@@ -316,48 +227,8 @@ ${order.issue_description}
         }
     }
 
-    validateAllFields() {
-        const required = document.querySelectorAll('#orderForm [required]');
-        let valid = true;
-        required.forEach(field => {
-            if (!field.value.trim()) valid = false;
-        });
-        return valid;
-    }
-
-    setupRealTimeValidation() {
-        // Simplified validation
-        const inputs = document.querySelectorAll('#orderForm input, #orderForm select, #orderForm textarea');
-        inputs.forEach(input => {
-            input.addEventListener('blur', () => {
-                if (!input.value.trim()) {
-                    input.style.borderColor = '#ef4444';
-                } else {
-                    input.style.borderColor = '';
-                }
-            });
-        });
-    }
-
-    setupPreviewUpdates() {
-        // Basic preview updates
-    }
-
-    calculateCompletionTime(urgency) {
-        const now = new Date();
-        switch (urgency) {
-            case 'Emergency': return new Date(now.getTime() + 6 * 60 * 60 * 1000).toISOString();
-            case 'Express': return new Date(now.getTime() + 24 * 60 * 60 * 1000).toISOString();
-            default: return new Date(now.getTime() + 3 * 24 * 60 * 60 * 1000).toISOString();
-        }
-    }
-
     loadOrderCounter() {
         return parseInt(localStorage.getItem('campusFixOrderCounter')) || 2580;
-    }
-
-    saveOrderCounter() {
-        localStorage.setItem('campusFixOrderCounter', this.orderCounter);
     }
 }
 
